@@ -143,9 +143,7 @@ var c = (function(){
       } else {
         result.push( item );
       }
-
     });
-
     return result;
   };
 

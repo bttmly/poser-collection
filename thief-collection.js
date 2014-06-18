@@ -38,26 +38,37 @@ var c = (function( global ){
     return true;
   }
 
-  // constructor function.
-  // function Collection( arr ){
-  //   [].push.apply( this, arr );
-  // }
-
-  // shorthand references
-  // var ap = Array.prototype;
-  // var cp = Collection.prototype = Object.create( Array.prototype );
+  function breakableEach( callback ) {
+    var result;
+    for ( var i = 0; i < this.length; i++ ) {
+      result = callback( this[i], i, this );
+      if ( result === false ) {
+        break;
+      }
+    }
+  }
 
   // helpers
   var slice = Function.prototype.call.bind( cp.slice );
 
-  // aliases
+  // create chainable versions of these native methods
+  ["push", "pop", "shift", "unshift"].forEach( function( method ) {
+    var name = "c" + method.charAt( 0 ).toUpperCase() + method.slice( 1 );
+    cp[name] = function() {
+      cp[method].apply( this, arguments );
+      return this;
+    };
+  })
+
+  // aliases for native methods.
   cp.each = cp.forEach;
   cp.collect = cp.map;
   cp.select = cp.filter;
 
-  // todo
-  // cp.forEachRight = function( fn ){};
-  // cp.eachRight = cp.forEachRight;
+  cp.forEachRight = function( fn ){
+    this.reverse().forEach( fn );
+  };
+  cp.eachRight = cp.forEachRight;
 
   cp.where = function( obj ){
     return this.filter( function( el ) {
@@ -65,35 +76,40 @@ var c = (function( global ){
     });
   };
 
-  // TODO
-  // cp.whereNot = function( obj ){
-
-  // };
-
-  cp.find = function( testFn ) {
-    for ( var i = 0; i < this.length; i++ ) {
-      if ( testFn( this[i], i, this ) ) {
-        return this[i];
-      }
-    }
+  cp.whereNot = function( obj ){
+    return this.filter( function( el ) {
+      return !matches( el, obj );
+    });
   };
 
-  cp.findNot = function() {
+  cp.find = function( testFn ) {
+    var result = null;
+    breakableEach.call( this, function( el, i, arr ) {
+      if ( testFn( el, i, arr ) ) {
+        result = el;
+        return false;
+      }
+    });
+    return result;
+  };
 
+  cp.findNot = function( testFn ) {
+    return this.find( function( el, i, arr ){
+      return !testFn( el, i, arr );
+    })
   };
 
   cp.findWhere = function( obj ){
-    for ( var i = 0; i < this.length; i++ ) {
-      if ( matches( this[i], obj ) ) {
-        return this[i];
-      }
-    }
+    return this.find( function( el ) {
+      return matches( el, obj );
+    })
   };
 
-  // TODO
-  // cp.findWhereNot = function( obj ) {
-
-  // };
+  cp.findWhereNot = function( obj ){
+    return this.find( function( el ) {
+      return !matches( el, obj );
+    })
+  };
 
   cp.pluck = function( prop ){
     return this.map( function( el ){
@@ -133,7 +149,7 @@ var c = (function( global ){
   };
 
   cp.clone = function() {
-
+    return this.slice();
   };
 
   cp.cloneDeep = function() {
@@ -178,6 +194,7 @@ var c = (function( global ){
     });
   };
 
+  // TODO
   // cp.flatten = function(){
 
   // };
@@ -189,7 +206,7 @@ var c = (function( global ){
       if ( testFn( el, i, arr ) ) {
         pass.push( el );
       } else {
-        fail.push( el, i, arr );
+        fail.push( el );
       }
     });
     // should be collection?
@@ -239,21 +256,19 @@ var c = (function( global ){
   };
   
   cp.unique = function(){
-    var found = new Collection();
-    var i = 0;
-    while ( i < this.length ){
-      if ( found.indexOf( this[i] ) !== -1 ) {
-        found.push( this[i] );
+    var found = new Collection()
+    this.each( function( el ) {
+      if ( !found.contains( el ) ) {
+        found.push( el )
       }
-      i++;
-    }
+    });
     return found;
   };
   cp.uniq = cp.unique;
 
-  cp.zip = function(){
-    // arguments 
-  };
+  // TODO
+  // cp.zip = function(){
+  // };
 
   cp.min = function( prop ){
     if ( prop ) {
@@ -279,7 +294,7 @@ var c = (function( global ){
 
   // args: ["name", "age", "gender"], [["joe", 30, "male"], ["jane", 35, "female"]] =>
   // return: [{name: "joe", age: 30, gender: "male"}, {name: "jane", age: 35, gender: "female"}];
-  factory.collectify = function( keys, valueArrays ) {
+  var collectifyHeaders = function( headers, values ) {
     var collection = new Collection();
     var obj;
     for ( var i = 0; i < valueArrays.length; i++ ) {
@@ -290,6 +305,19 @@ var c = (function( global ){
       collection.push( obj );
     }
     return collection;
+  };
+
+  // arg: [["name", "age", "gender"], ["joe", 30, "male"], ["jane", 35, "female"]] =>
+  // return: [{name: "joe", age: 30, gender: "male"}, {name: "jane", age: 35, gender: "female"}];
+  var collectifyTable = function( rows, headerIndex ) {
+    var headerIndex = headerIndex || 0;
+    var headers = rows.splice( headerIndex, 1 )[0]
+    return collectifyHeaders( headers, rows );
+  };
+
+
+  factory.collectify = function() {
+    // should sniff out various types of structured data and return a collection
   };
 
   factory.ctor = Collection;
