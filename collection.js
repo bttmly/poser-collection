@@ -4,14 +4,14 @@ var c = (function(){
 
   function isFunction( obj ){
     return typeof obj === "function";
-  };
+  }
 
   function matches( obj, against ){
     for ( var prop in against ) {
       if ( obj[prop] !== against[prop] ) return false;
     }
     return true;
-  };
+  }
 
   // constructor function.
   function Collection( arr ){
@@ -134,16 +134,12 @@ var c = (function(){
     });
   };
 
-  // cp.flatten = function(){
-
-  // };
-
   cp.flatten = function(nestedArray, result) {
     var result = result || new Collection();
 
     each( nestedArray, function( item ) {
       if ( Array.isArray( item ) ) {
-        result.push.apply( result, cp.flatten( item ) );
+        result.push.apply( result, cp.flatten.call( item ) );
       } else {
         result.push( item );
       }
@@ -190,8 +186,17 @@ var c = (function(){
     return result;
   };
 
-  // cp.difference = function(){
-  // };
+  cp.difference = function(){
+    var result = new Collection();
+    var args = slice( args );
+    this.each( function( el ) ){
+      var has = args.some( function( arr ) {
+        return arr.indexOf( el ) > -1;
+      });
+      if ( !has ) results.push( el );
+    });
+    return result;
+  };
   
   cp.unique = function() {
     var found = new Collection();
