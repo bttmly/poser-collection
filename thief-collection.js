@@ -54,8 +54,8 @@ var c = (function( global ){
   // create chainable versions of these native methods
   ["push", "pop", "shift", "unshift"].forEach( function( method ) {
     var name = "c" + method.charAt( 0 ).toUpperCase() + method.slice( 1 );
-    cp[name] = function() {
-      cp[method].apply( this, arguments );
+    Array.prototype[name] = function() {
+      Array.prototype[method].apply( this, arguments );
       return this;
     };
   })
