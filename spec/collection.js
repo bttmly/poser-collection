@@ -1,7 +1,8 @@
 'use strict';
 
 function match( obj, against ){
-  for ( var prop in against ) {
+  var prop;
+  for ( prop in against ) {
     if ( obj[prop] !== against[prop] ) return false;
   }
   return true;
