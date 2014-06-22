@@ -236,7 +236,7 @@ var c = (function( global ) {
     var args = slice( arguments );
     result.push.apply( this );
     args.each( function( argArr ) {
-      argArr.each( function( item ) {
+      argArr.forEach( function( item ) {
         if ( !result.contains( item ) ) {
           result.push( item );
         }
@@ -347,7 +347,7 @@ var c = (function( global ) {
   };
 
   factory.ctor = Collection;
-
+  factory.proto = cp;
   factory.isCollection = isCollection;
 
   return factory;

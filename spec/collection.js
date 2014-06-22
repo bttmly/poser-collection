@@ -416,3 +416,34 @@ describe( "#without", function(){
   });
 
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+describe( "#forEachRight", function() {
+  it("iterates over an array in reverse order", function(){
+    var original = c( [1, 2, 3, 4, 5] );
+    var result = [];
+    original.forEachRight( function( el ) {
+      result.push( el );
+    })
+    expect( result ).to.deep.equal( [5, 4, 3, 2, 1] );
+  })
+});
+
+
+

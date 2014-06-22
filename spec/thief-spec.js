@@ -430,3 +430,50 @@ describe( "#contains", function() {
   });
 
 });
+
+// 
+describe( "#forEachRight", function() {
+  it("iterates over an array in reverse order", function(){
+    var original = c( [1, 2, 3, 4, 5] );
+    var result = [];
+    original.forEachRight( function( el ) {
+      result.push( el );
+    });
+    expect( result ).to.deep.equal( [5, 4, 3, 2, 1] );
+  });
+});
+
+describe( "#compact", function() {
+  it( "returns a copy with falsy values removed", function() {
+    var original = [false, 1, 0, 2, "", 3, null, 4, undefined, 5];
+    var cOrignal = c( original );
+    var cResult = cOrignal.compact().toArray();
+    var uResult = _.compact( original );
+    expect( cResult ).to.deep.equal( uResult );
+  });
+});
+
+describe( "#partition", function() {
+  it( "returns an array with the first element containing all the passing values, the second all the failing", function() {
+    var original = [0, 1, 2, 3, 4, 5];
+    var cOriginal = c( original );
+    var test = function( el ) {
+      return el % 2 === 0;
+    };
+    var cResult = cOriginal.partition( test ).map( function( el ) {
+      return el.toArray()
+    }).toArray();
+    var uResult = _.partition( original, test );
+    expect( cResult ).to.deep.equal( uResult );
+  });
+});
+
+describe( "#union", function() {
+  it( "works like _.union", function() {
+    var a = [1, 2, 3, 4];
+    var b = [3, 4, 5, 6];
+    var cResult = c( a ).union( b ).toArray();
+    var uResult = _.union( a, b );
+    expect( cResult ).to.deep.equal( uResult );
+  });
+})
