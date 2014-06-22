@@ -30,15 +30,15 @@ var c = (function( poser ) {
   }
 
   function flip( fn ) {
-    return function() {
-      return fn.apply( this, cp.slice.call( arguments ).reverse() );
+    return function( a, b ) {
+      return fn.call( this, b, a );
     }
   }
 
   function partial( fn ) {
-    var args = cp.slice.call( arguments, 1 );
+    var args = slice( arguments, 1 );
     return function() {
-       return fn.apply( this, args.concat( cp.slice.call( arguments ) ) );
+       return fn.apply( this, args.concat( slice( arguments ) ) );
     };
   }
 
@@ -231,26 +231,14 @@ var c = (function( poser ) {
   };
 
   cp.union = function() {
-    var result = new Collection();
-    var args = slice( arguments );
-    result.push.apply( this );
-    args.each( function( argArr ) {
-      argArr.forEach( function( item ) {
-        if ( !result.contains( item ) ) {
-          result.push( item );
-        }
-      });
-    });
-    return result;
+    return cp.concat.apply( this, arguments ).unique();
   };
 
   cp.intersection = function() { 
     var result = new Collection();
     var args = slice( arguments );
     this.each( function( el ) {
-      var has = args.every( function( arr ) {
-        return arr.indexOf( el ) > -1;
-      });
+      var has = args.every( partial( flip( contains ), el ) );
       if ( has ) {
         result.push( el );
       }
@@ -262,10 +250,8 @@ var c = (function( poser ) {
     var result = new Collection();
     var args = slice( arguments );
     this.each( function( el ) {
-      var has = args.some( function( arr ) {
-        return arr.indexOf( el ) > -1;
-      });
-      if ( !has ) {
+      var notHas = args.every( not( partial( flip( contains ), el ) ) );
+      if ( notHas ) {
         result.push( el );
       }
     });
@@ -301,6 +287,10 @@ var c = (function( poser ) {
     return Math.max.apply( Math, this );
   };
 
+  cp.extent = function( prop ) {
+    return [ this.min( prop ), this.max( prop ) ];
+  }
+
   cp.toArray = function() {
     return Array.prototype.slice.call( this );
   };
@@ -314,21 +304,14 @@ var c = (function( poser ) {
 
   // args: ["name", "age", "gender"], [["joe", 30, "male"], ["jane", 35, "female"]] =>
   // return: [{name: "joe", age: 30, gender: "male"}, {name: "jane", age: 35, gender: "female"}];
-  function collectifyHeaders( headers, values ) {
-    var collection = new Collection();
-    var i, j, obj;
-    i = 0;
-    while ( i < values.length ) {
-      obj = {};
-      j = 0;
-      while ( j < headers.length ) {
-        obj[headers[j]] = values[i][j];
-        j += 1;
-      }
-      collection.push( obj );
-      i += 1;
-    }
-    return collection;
+  function collectifyHeaders( headers, rows ) {
+    return factory( rows ).map( function( row, i ) {
+      var obj = {};
+      headers.forEach( function( header, j ) {
+        obj[header] = row[j];
+      });
+      return obj;
+    });
   }
 
   // arg: [["name", "age", "gender"], ["joe", 30, "male"], ["jane", 35, "female"]] =>
@@ -341,13 +324,20 @@ var c = (function( poser ) {
     return collectifyHeaders( headers, rows );
   }
 
-  factory.collectify = function() {
-    // should sniff out various types of structured data and return a collection
-  };
+  // factory.collectify = collectifyHeaders;
+  // function() {
+  //   // should sniff out various types of structured data and return a collection
+  // };
 
   factory.ctor = Collection;
   factory.proto = cp;
   factory.isCollection = isCollection;
+
+  factory.util = {
+    flip: flip,
+    partial: partial,
+    contains: contains
+  };
 
   return factory;
 
