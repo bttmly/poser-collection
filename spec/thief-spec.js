@@ -472,8 +472,31 @@ describe( "#union", function() {
   it( "works like _.union", function() {
     var a = [1, 2, 3, 4];
     var b = [3, 4, 5, 6];
+    var d = [1, 2, 7, 8];
     var cResult = c( a ).union( b ).toArray();
     var uResult = _.union( a, b );
     expect( cResult ).to.deep.equal( uResult );
   });
-})
+});
+
+describe( "#intersection", function() {
+  it( "works like _.intersection", function() {
+    var a = [1, 2, 3, 4];
+    var b = [3, 4, 5, 6];
+    var d = [1, 2, 7, 8];
+    var cResult = c( a ).intersection( b ).toArray();
+    var uResult = _.intersection( a, b );
+    expect( cResult ).to.deep.equal( uResult );
+  });
+});
+
+describe( "#difference", function() {
+  it( "works like _.difference", function() {
+    var a = [1, 2, 3, 4];
+    var b = [3, 4, 5, 6];
+    var d = [1, 2, 7, 8];
+    var cResult = c( a ).difference( b ).toArray();
+    var uResult = _.difference( a, b );
+    expect( cResult ).to.deep.equal( uResult );
+  });
+});

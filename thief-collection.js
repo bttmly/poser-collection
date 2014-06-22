@@ -14,11 +14,13 @@ var c = (function( poser ) {
     return typeof obj === "function";
   }
 
+  // Should match Array as well as correctly subtyped classes from any execution context.
+  // Perhaps use more robust solution (kindof?)
   function isArrayLike( obj ) {
-    return Array.isArray( obj ) || isCollection( obj );
+    return Object.prototype.toString.call( obj ) === "[object Array]";
   }
 
-  function matches( obj, against ) {
+  function matches( against, obj ) {
     for ( var prop in against ) {
       if ( obj[prop] !== against[prop] ) { 
         return false;
@@ -27,14 +29,48 @@ var c = (function( poser ) {
     return true;
   }
 
+  function flip( fn ) {
+    return function() {
+      return fn.apply( this, cp.slice.call( arguments ).reverse() );
+    }
+  }
+
+  function partial( fn ) {
+    var args = cp.slice.call( arguments, 1 );
+    return function() {
+       return fn.apply( this, args.concat( cp.slice.call( arguments ) ) );
+    };
+  }
+
+  function get( prop ) {
+    return function( obj ) {
+      return obj[prop];
+    }
+  }
+
+  function not( fn ) {
+    return function() {
+      return !fn.apply( this, arguments );
+    }
+  }
+
+  function contains( obj, value ) {
+    return cp.indexOf.call( obj, value ) > -1;
+  }
+
+  function isTruthy( value ) {
+    return !!value;
+  }
+
   function breakableEach( obj, callback ) {
     var result;
     for ( var i = 0; i < obj.length; i++ ) {
       result = callback( obj[i], i, obj );
       if ( result === false ) {
-        break;
+        return result;
       }
     }
+    return null;
   }
 
   // helpers
@@ -42,6 +78,7 @@ var c = (function( poser ) {
 
   // create chainable versions of these native methods
   ["push", "pop", "shift", "unshift"].forEach( function( method ) {
+    // new methods will be named cPush, cPop, cShift, cUnshift
     var name = "c" + method.charAt( 0 ).toUpperCase() + method.slice( 1 );
     Array.prototype[name] = function() {
       Array.prototype[method].apply( this, arguments );
@@ -55,24 +92,16 @@ var c = (function( poser ) {
   cp.select = cp.filter;
 
   cp.forEachRight = function( fn ) {
-    var i = this.length - 1;
-    while ( i > -1 ) {
-      fn( this[i], i, this );
-      i -= 1;
-    }
+    this.slice().reverse().each( fn );
   };
   cp.eachRight = cp.forEachRight;
 
   cp.where = function( obj ) {
-    return this.filter( function( el ) {
-      return matches( el, obj );
-    });
+    return this.filter( partial( matches, obj ) );
   };
 
   cp.whereNot = function( obj ) {
-    return this.filter( function( el ) {
-      return !matches( el, obj );
-    });
+    return this.filter( not( partial( matches, obj ) ) );
   };
 
   cp.find = function( testFn ) {
@@ -83,31 +112,26 @@ var c = (function( poser ) {
         return false;
       }
     });
-    return result;
+    return result
+    // return breakableEach( this,  function( el, i, arr ) {
+    //   if ( testFn.apply( null, arguments ) ) return false
+    // });
   };
 
   cp.findNot = function( testFn ) {
-    return this.find( function( el, i, arr ) {
-      return !testFn( el, i, arr );
-    });
+    return this.find( not( testFn ) );
   };
 
   cp.findWhere = function( obj ) {
-    return this.find( function( el ) {
-      return matches( el, obj );
-    });
+    return this.find( partial( matches, obj ) );
   };
 
   cp.findWhereNot = function( obj ) {
-    return this.find( function( el ) {
-      return !matches( el, obj );
-    });
+    return this.find( not( partial( matches, obj ) ) );
   };
 
   cp.pluck = function( prop ) {
-    return this.map( function( el ) {
-      return el[prop];
-    });
+    return this.map( get( prop ) );
   };
 
   cp.pick = function() {
@@ -121,9 +145,7 @@ var c = (function( poser ) {
   };
 
   cp.reject = function( testFn ) {
-    return this.filter( function( el, i, arr ) {
-      return !testFn( el, i, arr );
-    });
+    return this.filter( not( testFn ) );
   };
 
   cp.invoke = function( fnOrMethod ) {
@@ -136,14 +158,12 @@ var c = (function( poser ) {
 
   cp.without = function() {
     var args = slice( arguments );
-    return this.reject( function( el ) {
-      return args.indexOf( el ) !== -1;
-    });
+    return this.reject( partial( contains, args ) )
   };
   cp.remove = cp.without;
 
   cp.contains = function( obj ) {
-    return this.indexOf( obj ) !== -1;
+    return contains( this, obj );
   };
 
   cp.tap = function( fn ) {
@@ -164,7 +184,7 @@ var c = (function( poser ) {
     if ( num == null ) {
       return this[0];
     }
-    return this.slice(0, num);
+    return this.slice( 0, num );
   };
   cp.head = cp.first;
   cp.take = cp.first;
@@ -173,14 +193,14 @@ var c = (function( poser ) {
     if ( num == null ) {
       num = 1;
     }
-    return this.slice(0, this.length - num);
+    return this.slice( 0, this.length - num );
   };
 
   cp.last = function( num ) {
     if ( num == null ) {
       return this[this.length - 1];
     }
-    return this.slice(0, -1 * num);
+    return this.slice( 0, -1 * num );
   };
 
   cp.rest = function( num ) {
@@ -193,9 +213,7 @@ var c = (function( poser ) {
   cp.drop = cp.rest;
 
   cp.compact = function() {
-    return this.filter( function( el ) {
-      return !!el;
-    });
+    return this.filter( isTruthy );
   };
 
   // TODO
@@ -206,7 +224,7 @@ var c = (function( poser ) {
   cp.partition = function( testFn ) {
     var pass = new Collection();
     var fail = new Collection();
-    this.each(function(el, i, arr) {
+    this.each( function( el, i, arr ) {
       ( testFn( el, i, arr ) ? pass : fail ).push( el );
     });
     return factory([ pass, fail ]);
@@ -228,7 +246,7 @@ var c = (function( poser ) {
 
   cp.intersection = function() { 
     var result = new Collection();
-    var args = slice( args );
+    var args = slice( arguments );
     this.each( function( el ) {
       var has = args.every( function( arr ) {
         return arr.indexOf( el ) > -1;
@@ -242,7 +260,7 @@ var c = (function( poser ) {
 
   cp.difference = function() {
     var result = new Collection();
-    var args = slice( args );
+    var args = slice( arguments );
     this.each( function( el ) {
       var has = args.some( function( arr ) {
         return arr.indexOf( el ) > -1;
@@ -284,7 +302,7 @@ var c = (function( poser ) {
   };
 
   cp.toArray = function() {
-    return Array.apply( null, this );
+    return Array.prototype.slice.call( this );
   };
 
   var factory = function( arr ) {
