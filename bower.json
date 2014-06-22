@@ -1,7 +1,9 @@
 {
   "name": "collection-",
   "private": true,
-  "dependencies": {},
+  "dependencies": {
+    "poser": "~1.1.3"
+  },
   "devDependencies": {
     "chai": "~1.8.0",
     "mocha": "~1.14.0",
