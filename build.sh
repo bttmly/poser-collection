@@ -1,0 +1,1 @@
+watchify thief-collection.js -s "c" -o tc.js

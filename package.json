@@ -1,6 +1,15 @@
 {
-  "name": "collection-",
+  "name": "collection.js",
   "private": true,
   "version": "0.0.0",
-  "dependencies": {}
+  "dependencies": {
+    "poser": "^1.1.3"
+  },
+  "description": "Creates an extensible Array-like class which has a lot of the Underscore collection methods.",
+  "main": "collection.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT"
 }
