@@ -1,7 +1,7 @@
 /*! collection- v0.0.0 - MIT license */
 
 "use strict";
-module.exports = (function( poser ) {
+module.exports = (function() {
   var poser = require( "poser" );
   var Collection = poser.Array();
   var cp = Collection.prototype;
@@ -299,42 +299,11 @@ module.exports = (function( poser ) {
     return new Collection().concat( arr );
   };
 
-  // args: ["name", "age", "gender"], [["joe", 30, "male"], ["jane", 35, "female"]] =>
-  // return: [{name: "joe", age: 30, gender: "male"}, {name: "jane", age: 35, gender: "female"}];
-  function collectifyHeaders( headers, rows ) {
-    return factory( rows ).map( function( row ) {
-      var obj = {};
-      headers.forEach( function( header, j ) {
-        obj[header] = row[j];
-      });
-      return obj;
-    });
-  }
-
-  // arg: [["name", "age", "gender"], ["joe", 30, "male"], ["jane", 35, "female"]] =>
-  // return: [{name: "joe", age: 30, gender: "male"}, {name: "jane", age: 35, gender: "female"}];
-  function collectifyTable( rows, headerIndex ) {
-    if ( headerIndex == null ) {
-      headerIndex = 0;
-    }
-    var headers = rows.splice( headerIndex, 1 )[0];
-    return collectifyHeaders( headers, rows );
-  }
-
-  // factory.collectify = collectifyHeaders;
-  // function() {
-  //   // should sniff out various types of structured data and return a collection
-  // };
-
   factory.ctor = Collection;
-  factory.proto = cp;
-  factory.isCollection = isCollection;
+  factory.proto = Collection.prototype;
 
-  factory.util = {
-    flip: flip,
-    partial: partial,
-    contains: contains
-  };
+  factory.isCollection = isCollection;
+  factory.isArrayLike = isArrayLike;
 
   return factory;
 
