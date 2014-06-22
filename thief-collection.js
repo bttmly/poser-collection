@@ -32,7 +32,7 @@ var c = (function( poser ) {
   function flip( fn ) {
     return function( a, b ) {
       return fn.call( this, b, a );
-    }
+    };
   }
 
   function partial( fn ) {
@@ -45,13 +45,13 @@ var c = (function( poser ) {
   function get( prop ) {
     return function( obj ) {
       return obj[prop];
-    }
+    };
   }
 
   function not( fn ) {
     return function() {
       return !fn.apply( this, arguments );
-    }
+    };
   }
 
   function contains( obj, value ) {
@@ -112,10 +112,7 @@ var c = (function( poser ) {
         return false;
       }
     });
-    return result
-    // return breakableEach( this,  function( el, i, arr ) {
-    //   if ( testFn.apply( null, arguments ) ) return false
-    // });
+    return result;
   };
 
   cp.findNot = function( testFn ) {
@@ -158,7 +155,7 @@ var c = (function( poser ) {
 
   cp.without = function() {
     var args = slice( arguments );
-    return this.reject( partial( contains, args ) )
+    return this.reject( partial( contains, args ) );
   };
   cp.remove = cp.without;
 
@@ -289,7 +286,7 @@ var c = (function( poser ) {
 
   cp.extent = function( prop ) {
     return [ this.min( prop ), this.max( prop ) ];
-  }
+  };
 
   cp.toArray = function() {
     return Array.prototype.slice.call( this );
@@ -305,7 +302,7 @@ var c = (function( poser ) {
   // args: ["name", "age", "gender"], [["joe", 30, "male"], ["jane", 35, "female"]] =>
   // return: [{name: "joe", age: 30, gender: "male"}, {name: "jane", age: 35, gender: "female"}];
   function collectifyHeaders( headers, rows ) {
-    return factory( rows ).map( function( row, i ) {
+    return factory( rows ).map( function( row ) {
       var obj = {};
       headers.forEach( function( header, j ) {
         obj[header] = row[j];
