@@ -1,28 +1,9 @@
 /*! collection- v0.0.0 - MIT license */
+
 "use strict";
-var c = (function( global ) {
+var c = (function( poser ) {
 
-  var borrow = function( className ) {
-    var iframe, altCtx, key, stolen, frames;
-    frames = global.frames;
-    key = Math.random().toString( 36 ).slice( 2 );
-    iframe = global.document.createElement( "iframe" );
-    iframe.style.display = "none";
-    global.document.body.appendChild( iframe );
-    altCtx = frames[frames.length - 1].document;
-    altCtx.write(
-      "<script>parent['" +
-      key +
-      "'] = " +
-      className + 
-      ";</script>"
-    );
-    stolen = global[key];
-    delete global[key];
-    return stolen;
-  };
-
-  var Collection = borrow("Array");
+  var Collection = poser( "Array" );
   var cp = Collection.prototype;
 
   function isCollection( obj ) {
@@ -352,4 +333,4 @@ var c = (function( global ) {
 
   return factory;
 
-})( window );
+})( poser );
