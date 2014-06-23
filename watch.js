@@ -3,4 +3,4 @@ var args = process.argv.slice( 2 );
 
 // global variable name that holds the collection factory function.
 var globalName = args[0] || "c";
-child.exec( "watchify thief-collection.js -s " + globalName + " -o tc.js" );
+child.exec( "watchify ./src/collection.js -s " + globalName + " -o ./collection-browser.js" );

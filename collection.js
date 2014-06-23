@@ -31,16 +31,17 @@ module.exports = (function() {
   var Collection = poser.Array();
   var cp = Collection.prototype;
 
-  function isCollection( obj ) {
-    return obj instanceof Collection;
-  }
+  // this could be confusing.
+  delete Collection.isArray
+
+  var isCollection = function( obj ) {
+    return obj instanceof this;
+  }.bind( Collection );
 
   function isFunction( obj ) {
     return typeof obj === "function";
   }
 
-  // Should match Array as well as correctly subtyped classes from any execution context.
-  // Perhaps use more robust solution (kindof?)
   function isArrayLike( obj ) {
     return Object.prototype.toString.call( obj ) === "[object Array]";
   }
@@ -85,6 +86,20 @@ module.exports = (function() {
 
   function isTruthy( value ) {
     return !!value;
+  }
+
+  function identity( value ) {
+    return value;
+  }
+
+  function iterator( value ) {
+    if ( value == null ) {
+      return identity;
+    } else if ( isFunction( value ) ) {
+      return value;
+    } else {
+      return get( value );
+    }
   }
 
   function breakableEach( obj, callback ) {
@@ -290,6 +305,29 @@ module.exports = (function() {
     return found;
   };
   cp.uniq = cp.unique;
+
+  cp.sortBy = function( itr, ctx ) {
+    itr = iterator( itr );
+    return cp.pluck.call( this.map( function( val, i, obj ) {
+      return {
+        val: val,
+        i: i,
+        param: itr.call( ctx, val, i, obj )
+      };
+    }).sort( function( left, right ) {
+      var a = left.param;
+      var b = right.param;
+      if ( a !== b ) {
+        if ( a > b || a === undefined ) {
+          return 1;
+        }
+        if ( a < b || b === undefined ) {
+          return -1;
+        }
+      }
+      return left.index - right.index;
+    }), "val" );
+  };
 
   // TODO
   // cp.zip = function() {
