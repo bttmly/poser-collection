@@ -4,6 +4,7 @@
 module.exports = (function() {
   var poser = require( "poser" );
   var Collection = poser.Array();
+
   var cp = Collection.prototype;
 
   // this could be confusing, so dispose of it.
