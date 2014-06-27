@@ -2,9 +2,11 @@
 
 "use strict";
 module.exports = (function() {
+  
   var poser = require( "poser" );
   var Collection = poser.Array();
-
+  var fast = require( "../modules/fast.js" )( Collection );
+  
   var cp = Collection.prototype;
 
   // this could be confusing, so dispose of it.
@@ -96,11 +98,42 @@ module.exports = (function() {
   ["push", "pop", "shift", "unshift"].forEach( function( method ) {
     // new methods will be named cPush, cPop, cShift, cUnshift
     var name = "c" + method.charAt( 0 ).toUpperCase() + method.slice( 1 );
-    Array.prototype[name] = function() {
-      Array.prototype[method].apply( this, arguments );
+    Collection.prototype[name] = function() {
+      Collection.prototype[method].apply( this, arguments );
       return this;
     };
   });
+  
+  // Methods that we're delegating to fast.js
+  cp.forEach = function( fn, thisArg ) {
+    return fast.forEach.call( null, this, fn, thisArg );
+  };
+
+  cp.map = function( fn, thisArg ) {
+    return fast.map.call( null, this, fn, thisArg );
+  };
+
+  cp.reduce = function( fn, initialValue, thisArg ) {
+    return fast.reduce.call( null, this, fn, thisArg );
+  };
+
+  cp.indexOf = function( target ) {
+    return fast.indexOf.call( null, this, target );
+  };
+
+  cp.lastIndexOf = function( target ) {
+    return fast.lastIndexOf.call( null, this, target );
+  };
+
+  cp.filter = function( fn, thisArg ) {
+    var results = [];
+    cp.forEach.call( this, function( el, i, arr ) {
+      if ( fn( el, i, arr ) ) {
+        results.push( el );
+      }
+    });
+    return results;
+  }
 
   // aliases for native methods.
   cp.each = cp.forEach;

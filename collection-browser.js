@@ -1,4 +1,319 @@
 !function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.c=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
+'use strict';
+
+// pass an Array-like constructor to the exported function
+// where appropriate, fast.js functions will return instances of that object
+// defaults to Array.
+module.exports = function( ctor ) {
+
+  if (ctor == null) {
+    ctor = Array;
+  }
+
+  // This will return true for instances of Array constructors from other execution contexts.
+  // Probably needs edge-case testing.
+  var isArrayLike = function(obj) {
+    return Object.prototype.toString.call(obj) === '[object Array]';
+  };
+
+  // maybe should throw if isArrayLike(new ctor()) is false?
+
+  var methods = {
+    /**
+     * # Bind
+     * Analogue of `Function::bind()`.
+     *
+     * ```js
+     * var bind = require('fast.js').bind;
+     * var bound = bind(myfunc, this, 1, 2, 3);
+     *
+     * bound(4);
+     * ```
+     *
+     *
+     * @param  {Function} fn          The function which should be bound.
+     * @param  {Object}   thisContext The context to bind the function to.
+     * @param  {mixed}    args, ...   Additional arguments to pre-bind.
+     * @return {Function}             The bound function.
+     */
+    bind: function fastBind (fn, thisContext) {
+      var boundLength = arguments.length - 2,
+          boundArgs;
+
+      if (boundLength > 0) {
+        boundArgs = new ctor(boundLength);
+        for (var i = 0; i < boundLength; i++) {
+          boundArgs[i] = arguments[i + 2];
+        }
+        return function () {
+          var length = arguments.length,
+              args = new ctor(boundLength + length),
+              i;
+          for (i = 0; i < boundLength; i++) {
+            args[i] = boundArgs[i];
+          }
+          for (i = 0; i < length; i++) {
+            args[boundLength + i] = arguments[i];
+          }
+          return fn.apply(thisContext, args);
+        };
+      }
+      else {
+        return function () {
+          var length = arguments.length,
+              args = new ctor(length),
+              i;
+          for (i = 0; i < length; i++) {
+            args[i] = arguments[i];
+          }
+          return fn.apply(thisContext, args);
+        };
+      }
+    },
+
+    /**
+     * # Partial Application
+     *
+     * Partially apply a function. This is similar to `.bind()`,
+     * but with one important difference - the returned function is not bound
+     * to a particular context. This makes it easy to add partially
+     * applied methods to objects. If you need to bind to a context,
+     * use `.bind()` instead.
+     *
+     *
+     * @param  {Function} fn          The function to partially apply.
+     * @param  {mixed}    args, ...   Arguments to pre-bind.
+     * @return {Function}             The partially applied function.
+     */
+    partial: function fastPartial (fn) {
+      var boundLength = arguments.length - 1,
+          boundArgs;
+
+      boundArgs = new ctor(boundLength);
+      for (var i = 0; i < boundLength; i++) {
+        boundArgs[i] = arguments[i + 1];
+      }
+      return function () {
+        var length = arguments.length,
+            args = new ctor(boundLength + length),
+            i;
+        for (i = 0; i < boundLength; i++) {
+          args[i] = boundArgs[i];
+        }
+        for (i = 0; i < length; i++) {
+          args[boundLength + i] = arguments[i];
+        }
+        return fn.apply(this, args);
+      };
+    },
+
+    /**
+     * # Clone
+     *
+     * Clone an item. Primitive values will be returned directly,
+     * arrays and objects will be shallow cloned. If you know the
+     * type of input you're dealing with, call `.cloneArray()` or `.cloneObject()`
+     * instead.
+     *
+     * @param  {mixed} input The input to clone.
+     * @return {mixed}       The cloned input.
+     */
+    clone: function clone (input) {
+      if (!input || typeof input !== 'object') {
+        return input;
+      }
+      else if (isArrayLike(input)) {
+        return methods.cloneArray(input);
+      }
+      else {
+        return methods.cloneObject(input);
+      }
+    },
+
+    /**
+     * # Clone Array
+     *
+     * Clone an array or array like object (e.g. `arguments`).
+     * This is the equivalent of calling `Array.prototype.slice.call(arguments)`, but
+     * significantly faster.
+     *
+     * @param  {Array} input The array or array-like object to clone.
+     * @return {Array}       The cloned array.
+     */
+    cloneArray: function fastCloneArray (input) {
+      var length = input.length,
+          sliced = new ctor(length),
+          i;
+      for (i = 0; i < length; i++) {
+        sliced[i] = input[i];
+      }
+      return sliced;
+    },
+
+    /**
+     * # Clone Object
+     *
+     * Shallow clone a simple object.
+     *
+     * > Note: Prototypes and non-enumerable properties will not be copied!
+     *
+     * @param  {Object} input The object to clone.
+     * @return {Object}       The cloned object.
+     */
+    cloneObject: function fastCloneObject (input) {
+      var keys = Object.keys(input),
+          total = keys.length,
+          cloned = {},
+          i, key;
+
+      for (i = 0; i < total; i++) {
+        key = keys[i];
+        cloned[key] = input[key];
+      }
+
+      return cloned;
+    },
+
+
+    /**
+     * # Concat
+     *
+     * Concatenate multiple arrays.
+     *
+     * > Note: This function is effectively identical to `Array.prototype.concat()`.
+     *
+     *
+     * @param  {Array|mixed} item, ... The item(s) to concatenate.
+     * @return {Array}                 The array containing the concatenated items.
+     */
+    concat: function fastConcat () {
+      var length = arguments.length,
+          arr = [],
+          i, item, childLength, j;
+
+      for (i = 0; i < length; i++) {
+        item = arguments[i];
+        if (isArrayLike(item)) {
+          childLength = item.length;
+          for (j = 0; j < childLength; j++) {
+            arr.push(item[j]);
+          }
+        }
+        else {
+          arr.push(item);
+        }
+      }
+      return arr;
+    },
+
+
+    /**
+     * # Map
+     *
+     * A fast `.map()` implementation.
+     *
+     * @param  {Array}    subject     The array (or array-like) to map over.
+     * @param  {Function} fn          The mapper function.
+     * @param  {Object}   thisContext The context for the mapper.
+     * @return {Array}                The array containing the results.
+     */
+    map: function fastMap (subject, fn, thisContext) {
+      var length = subject.length,
+          result = new ctor(length),
+          i;
+      for (i = 0; i < length; i++) {
+        result[i] = fn.call(thisContext, subject[i], i, subject);
+      }
+      return result;
+    },
+
+    /**
+     * # Reduce
+     *
+     * A fast `.reduce()` implementation.
+     *
+     * @param  {Array}    subject      The array (or array-like) to reduce.
+     * @param  {Function} fn           The reducer function.
+     * @param  {mixed}    initialValue The initial value for the reducer.
+     * @param  {Object}   thisContext  The context for the reducer.
+     * @return {mixed}                 The final result.
+     */
+    reduce: function fastReduce (subject, fn, initialValue, thisContext) {
+      var length = subject.length,
+          result = initialValue,
+          i;
+      for (i = 0; i < length; i++) {
+        result = fn.call(thisContext, result, subject[i], i, subject);
+      }
+      return result;
+    },
+
+    /**
+     * # For Each
+     *
+     * A fast `.forEach()` implementation.
+     *
+     * @param  {Array}    subject     The array (or array-like) to iterate over.
+     * @param  {Function} fn          The visitor function.
+     * @param  {Object}   thisContext The context for the visitor.
+     */
+    forEach: function fastForEach (subject, fn, thisContext) {
+      var length = subject.length,
+          i;
+      for (i = 0; i < length; i++) {
+        fn.call(thisContext, subject[i], i, subject);
+      }
+    },
+
+    /**
+     * # Index Of
+     *
+     * A faster `.indexOf()` implementation.
+     *
+     * @param  {Array}  subject The array (or array-like) to search within.
+     * @param  {mixed}  target  The target item to search for.
+     * @return {Number}         The position of the target in the subject, or -1 if it does not exist.
+     */
+    indexOf: function fastIndexOf (subject, target) {
+      var length = subject.length,
+          i;
+      for (i = 0; i < length; i++) {
+        if (subject[i] === target) {
+          return i;
+        }
+      }
+      return -1;
+    },
+
+
+
+    /**
+     * # Last Index Of
+     *
+     * A faster `.lastIndexOf()` implementation.
+     *
+     * @param  {Array}  subject The array (or array-like) to search within.
+     * @param  {mixed}  target  The target item to search for.
+     * @return {Number}         The last position of the target in the subject, or -1 if it does not exist.
+     */
+    lastIndexOf: function fastIndexOf (subject, target) {
+      var length = subject.length,
+          i;
+      for (i = length - 1; i >= 0; i--) {
+        if (subject[i] === target) {
+          return i;
+        }
+      }
+      return -1;
+    }
+  
+  };
+
+  return methods;
+  
+};
+
+},{}],2:[function(_dereq_,module,exports){
 var poser = _dereq_('./src/node');
 
 module.exports = poser;
@@ -9,7 +324,7 @@ function pose (type) {
   poser[type] = function poseComputedType () { return poser(type); };
 }
 
-},{"./src/node":2}],2:[function(_dereq_,module,exports){
+},{"./src/node":3}],3:[function(_dereq_,module,exports){
 'use strict';
 
 var vm = _dereq_('vm');
@@ -22,13 +337,16 @@ function poser (type) {
 
 module.exports = poser;
 
-},{"vm":4}],3:[function(_dereq_,module,exports){
+},{"vm":5}],4:[function(_dereq_,module,exports){
 /*! collection- v0.0.0 - MIT license */
 
 "use strict";
 module.exports = (function() {
+  
   var poser = _dereq_( "poser" );
   var Collection = poser.Array();
+  var fast = _dereq_( "../modules/fast.js" )( Collection );
+  
   var cp = Collection.prototype;
 
   // this could be confusing, so dispose of it.
@@ -120,11 +438,32 @@ module.exports = (function() {
   ["push", "pop", "shift", "unshift"].forEach( function( method ) {
     // new methods will be named cPush, cPop, cShift, cUnshift
     var name = "c" + method.charAt( 0 ).toUpperCase() + method.slice( 1 );
-    Array.prototype[name] = function() {
-      Array.prototype[method].apply( this, arguments );
+    Collection.prototype[name] = function() {
+      Collection.prototype[method].apply( this, arguments );
       return this;
     };
   });
+  
+  // Native methods that we're delegating to fast.js
+  cp.forEach = function( fn, thisArg ) {
+    return fast.forEach.call( null, this, fn, thisArg );
+  };
+
+  cp.map = function( fn, thisArg ) {
+    return fast.map.call( null, this, fn, thisArg );
+  };
+
+  cp.reduce = function( fn, initialValue, thisArg ) {
+    return fast.reduce.call( null, this, fn, thisArg );
+  }
+
+  cp.indexOf = function( target ) {
+    return fast.indexOf.call( null, this, target );
+  }
+
+  cp.lastIndexOf = function( target ) {
+    return fast.lastIndexOf.call( null, this, target );
+  }
 
   // aliases for native methods.
   cp.each = cp.forEach;
@@ -372,7 +711,7 @@ module.exports = (function() {
   return factory;
 
 })();
-},{"poser":1}],4:[function(_dereq_,module,exports){
+},{"../modules/fast.js":1,"poser":2}],5:[function(_dereq_,module,exports){
 var indexOf = _dereq_('indexof');
 
 var Object_keys = function (obj) {
@@ -512,7 +851,7 @@ exports.createContext = Script.createContext = function (context) {
     return copy;
 };
 
-},{"indexof":5}],5:[function(_dereq_,module,exports){
+},{"indexof":6}],6:[function(_dereq_,module,exports){
 
 var indexOf = [].indexOf;
 
@@ -523,6 +862,6 @@ module.exports = function(arr, obj){
   }
   return -1;
 };
-},{}]},{},[3])
-(3)
+},{}]},{},[4])
+(4)
 });
