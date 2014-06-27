@@ -444,7 +444,7 @@ module.exports = (function() {
     };
   });
   
-  // Native methods that we're delegating to fast.js
+  // Methods that we're delegating to fast.js
   cp.forEach = function( fn, thisArg ) {
     return fast.forEach.call( null, this, fn, thisArg );
   };
@@ -455,15 +455,25 @@ module.exports = (function() {
 
   cp.reduce = function( fn, initialValue, thisArg ) {
     return fast.reduce.call( null, this, fn, thisArg );
-  }
+  };
+
+  cp.filter = function( fn, thisArg ) {
+    var results = [];
+    fast.forEach.call( null, this, function( el, i, arr ) {
+      if ( fn( el, i, arr ) ) {
+        results.push( el );
+      }
+    });
+    return results;
+  };
 
   cp.indexOf = function( target ) {
     return fast.indexOf.call( null, this, target );
-  }
+  };
 
   cp.lastIndexOf = function( target ) {
     return fast.lastIndexOf.call( null, this, target );
-  }
+  };
 
   // aliases for native methods.
   cp.each = cp.forEach;
