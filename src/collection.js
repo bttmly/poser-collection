@@ -117,6 +117,16 @@ module.exports = (function() {
     return fast.reduce.call( null, this, fn, thisArg );
   };
 
+  cp.filter = function( fn, thisArg ) {
+    var results = [];
+    fast.forEach.call( null, this, function( el, i, arr ) {
+      if ( fn( el, i, arr ) ) {
+        results.push( el );
+      }
+    });
+    return results;
+  };
+
   cp.indexOf = function( target ) {
     return fast.indexOf.call( null, this, target );
   };
@@ -124,16 +134,6 @@ module.exports = (function() {
   cp.lastIndexOf = function( target ) {
     return fast.lastIndexOf.call( null, this, target );
   };
-
-  cp.filter = function( fn, thisArg ) {
-    var results = [];
-    cp.forEach.call( this, function( el, i, arr ) {
-      if ( fn( el, i, arr ) ) {
-        results.push( el );
-      }
-    });
-    return results;
-  }
 
   // aliases for native methods.
   cp.each = cp.forEach;
