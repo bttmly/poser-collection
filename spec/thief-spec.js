@@ -19,7 +19,7 @@ function strictMatch( obj, against ){
 describe("collection", function () {
 
   it("exists", function () {
-    expect(c).to.be.a("function");
+    expect( c ).to.be.a( "function" );
   });
 
   it("creates collections", function() {

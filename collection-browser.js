@@ -458,7 +458,7 @@ module.exports = (function() {
   };
 
   cp.filter = function( fn, thisArg ) {
-    var results = [];
+    var results = new Collection();
     fast.forEach.call( null, this, function( el, i, arr ) {
       if ( fn( el, i, arr ) ) {
         results.push( el );
