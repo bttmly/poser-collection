@@ -725,7 +725,7 @@ module.exports = (function() {
 
 })();
 },{"../modules/fast.js":1,"./mixin-imperatives.js":5,"poser":2}],5:[function(_dereq_,module,exports){
-wmodule.exports = function mixinImperatives( proto ) {
+module.exports = function mixinImperatives( proto ) {
 
     function matches( against, obj ) {
     for ( var prop in against ) {

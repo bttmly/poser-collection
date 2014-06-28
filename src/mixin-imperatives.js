@@ -1,4 +1,4 @@
-wmodule.exports = function mixinImperatives( proto ) {
+module.exports = function mixinImperatives( proto ) {
 
     function matches( against, obj ) {
     for ( var prop in against ) {
