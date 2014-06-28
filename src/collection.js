@@ -9,6 +9,9 @@ module.exports = (function() {
   
   var cp = Collection.prototype;
 
+  // adds imperatives in a nice one liner.
+  require( "./mixin-imperatives.js" )( cp );
+
   // this could be confusing, so dispose of it.
   delete Collection.isArray;
 
