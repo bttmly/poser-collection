@@ -51,12 +51,12 @@ wmodule.exports = function mixinImperatives( proto ) {
 
   proto.imperativeFindWhere = function( obj ) {
     fn = function( item ) { return matches( item, obj ) };
-    return this._findImp( fn );
+    return this.imperativeFind( fn );
   };
 
   proto.imperativeFindWhereNot = function( obj ) {
     fn = function( item ) { return !matches( item, obj ) };
-    return this._findImp( fn );
+    return this.imperativeFind( fn );
   };
 
 };

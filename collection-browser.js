@@ -725,7 +725,7 @@ module.exports = (function() {
 
 })();
 },{"../modules/fast.js":1,"./mixin-imperatives.js":5,"poser":2}],5:[function(_dereq_,module,exports){
-module.exports = function mixinImperatives( proto ) {
+wmodule.exports = function mixinImperatives( proto ) {
 
     function matches( against, obj ) {
     for ( var prop in against ) {
@@ -745,6 +745,7 @@ module.exports = function mixinImperatives( proto ) {
       if ( matches( this[i], obj ) ) {
         results.push( this[i] );
       }
+      i++
     }
     return results;
   };
@@ -758,6 +759,7 @@ module.exports = function mixinImperatives( proto ) {
       if ( !matches( this[i], obj ) ) {
         results.push( this[i] );
       }
+      i++
     }
     return results;
   };
@@ -769,18 +771,19 @@ module.exports = function mixinImperatives( proto ) {
       if ( testFn( this[i], i, this ) ) {
         return this[i];
       }
+      i++
     }
     return null;
   };
 
   proto.imperativeFindWhere = function( obj ) {
     fn = function( item ) { return matches( item, obj ) };
-    return this._findImp( fn );
+    return this.imperativeFind( fn );
   };
 
   proto.imperativeFindWhereNot = function( obj ) {
     fn = function( item ) { return !matches( item, obj ) };
-    return this._findImp( fn );
+    return this.imperativeFind( fn );
   };
 
 };
