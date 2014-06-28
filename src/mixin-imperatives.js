@@ -1,4 +1,4 @@
-module.exports = function mixinImperatives( proto ) {
+wmodule.exports = function mixinImperatives( proto ) {
 
     function matches( against, obj ) {
     for ( var prop in against ) {
@@ -18,6 +18,7 @@ module.exports = function mixinImperatives( proto ) {
       if ( matches( this[i], obj ) ) {
         results.push( this[i] );
       }
+      i++
     }
     return results;
   };
@@ -31,6 +32,7 @@ module.exports = function mixinImperatives( proto ) {
       if ( !matches( this[i], obj ) ) {
         results.push( this[i] );
       }
+      i++
     }
     return results;
   };
@@ -42,6 +44,7 @@ module.exports = function mixinImperatives( proto ) {
       if ( testFn( this[i], i, this ) ) {
         return this[i];
       }
+      i++
     }
     return null;
   };
