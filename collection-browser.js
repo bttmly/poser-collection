@@ -382,12 +382,13 @@ module.exports = (function() {
     };
   }
 
-  function partial( fn ) {
-    var args = slice( arguments, 1 );
-    return function() {
-       return fn.apply( this, args.concat( slice( arguments ) ) );
-    };
-  }
+  // using fast.partial() for now.
+  // function partial( fn ) {
+  //   var args = slice( arguments, 1 );
+  //   return function() {
+  //      return fn.apply( this, args.concat( slice( arguments ) ) );
+  //   };
+  // }
 
   function get( prop ) {
     return function( obj ) {
@@ -397,6 +398,7 @@ module.exports = (function() {
 
   function not( fn ) {
     return function() {
+      // doesn't need fast arguments; .apply() is special
       return !fn.apply( this, arguments );
     };
   }
@@ -461,7 +463,7 @@ module.exports = (function() {
   };
 
   cp.filter = function( fn, thisArg ) {
-    var results = [];
+    var results = new Collection();
     fast.forEach.call( null, this, function( el, i, arr ) {
       if ( fn( el, i, arr ) ) {
         results.push( el );
@@ -489,11 +491,11 @@ module.exports = (function() {
   cp.eachRight = cp.forEachRight;
 
   cp.where = function( obj ) {
-    return this.filter( partial( matches, obj ) );
+    return this.filter( fast.partial( matches, obj ) );
   };
 
   cp.whereNot = function( obj ) {
-    return this.filter( not( partial( matches, obj ) ) );
+    return this.filter( not( fast.partial( matches, obj ) ) );
   };
 
   cp.find = function( testFn ) {
@@ -512,11 +514,11 @@ module.exports = (function() {
   };
 
   cp.findWhere = function( obj ) {
-    return this.find( partial( matches, obj ) );
+    return this.find( fast.partial( matches, obj ) );
   };
 
   cp.findWhereNot = function( obj ) {
-    return this.find( not( partial( matches, obj ) ) );
+    return this.find( not( fast.partial( matches, obj ) ) );
   };
 
   cp.pluck = function( prop ) {
@@ -524,7 +526,12 @@ module.exports = (function() {
   };
 
   cp.pick = function() {
-    var props = slice( arguments );
+    // fast arguments array
+    var props = new Array( arguments.length );
+    for ( var i = 0; i < args.length; i++ ) {
+      args[i] = arguments[i];
+    }
+    // var props = slice( arguments );
     return this.map( function( el ) {
       var obj = {};
       props.each( function( prop ) {
@@ -539,7 +546,12 @@ module.exports = (function() {
   };
 
   cp.invoke = function( fnOrMethod ) {
-    var args = slice( arguments, 1 );
+    // fast arguments array
+    var args = new Array( arguments.length - 1 );
+    for ( var i = 0; i < args.length; i++ ) {
+      args[i] = arguments[i + 1];
+    }
+    // var args = slice( arguments, 1 );
     this.forEach( function( el ) {
       ( isFunction( fnOrMethod ) ? fnOrMethod : el[fnOrMethod] ).apply( el, args );
     });
@@ -547,8 +559,13 @@ module.exports = (function() {
   };
 
   cp.without = function() {
-    var args = slice( arguments );
-    return this.reject( partial( contains, args ) );
+    // fast arguments array
+    var args = new Array( arguments.length );
+    for ( var i = 0; i < args.length; i++ ) {
+      args[i] = arguments[i];
+    }
+    // var args = slice( arguments );
+    return this.reject( fast.partial( contains, args ) );
   };
   cp.remove = cp.without;
 
@@ -562,7 +579,7 @@ module.exports = (function() {
   };
 
   cp.clone = function() {
-    return this.slice();
+    return fast.cloneArray.call( this );
   };
 
   // todo
@@ -621,14 +638,20 @@ module.exports = (function() {
   };
 
   cp.union = function() {
+    // doesn't need fast arguments; .apply() is special.
     return cp.concat.apply( this, arguments ).unique();
   };
 
   cp.intersection = function() { 
     var result = new Collection();
-    var args = slice( arguments );
+    // fast arguments array
+    var args = new Array( arguments.length );
+    for ( var i = 0; i < args.length; i++ ) {
+      args[i] = arguments[i];
+    }
+    // var args = slice( arguments );
     this.each( function( el ) {
-      var has = args.every( partial( flip( contains ), el ) );
+      var has = args.every( fast.partial( flip( contains ), el ) );
       if ( has ) {
         result.push( el );
       }
@@ -638,9 +661,14 @@ module.exports = (function() {
 
   cp.difference = function() {
     var result = new Collection();
-    var args = slice( arguments );
+    // fast arguments array
+    var args = new Array( arguments.length );
+    for ( var i = 0; i < args.length; i++ ) {
+      args[i] = arguments[i];
+    }
+    // var args = slice( arguments );
     this.each( function( el ) {
-      var notHas = args.every( not( partial( flip( contains ), el ) ) );
+      var notHas = args.every( not( fast.partial( flip( contains ), el ) ) );
       if ( notHas ) {
         result.push( el );
       }
