@@ -1,13 +1,5 @@
 "use strict";
 
-var c = window.c;
-var helpers = window.helpers;
-var _ = window._;
-
-var describe = window.describe;
-var it = window.it;
-var expect = window.expect;
-
 function match( obj, against ){
   for ( var prop in against ) {
     if ( obj[prop] !== against[prop] ) {
@@ -35,6 +27,13 @@ describe("collection", function () {
     expect( col ).to.be.instanceof( c.ctor );
   });
 
+  // collections are instances of "borrowed constructors"
+  // it("creates collections that inherit from array", function() {
+  //   var col = c();
+  //   expect( col ).to.be.instanceof( Array );
+  // });
+
+  // Add more assertions here
 });
 
 // Collection.prototype.toArray
@@ -53,6 +52,11 @@ describe( "#toArray", function() {
 // Collection.prototype.push === Array.prototype.push
 describe( "#push", function() {
 
+  // it("delegates to Array.prototype", function() {
+  //   var col = c();
+  //   expect( col.push ).to.equal( Array.prototype.push );
+  // });
+
   it("does not change a collection into an array", function() {
     var col = c();
     col.push("item");
@@ -61,25 +65,14 @@ describe( "#push", function() {
 
 });
 
-describe( "#chainPush", function() {
-  var col = c([ 1 ]);
-  var result;
-
-  it( "pushes an item into a collection", function() {
-    expect( col.last() ).to.equal( 1 );
-    result = col.chainPush( 2 );
-    expect( col.last() ).to.equal( 2 );
-  });
-
-  it( "returns the collection", function(){
-    expect( result ).to.equal( col );
-  });
-
-});
-
 
 // Collection.prototype.pop === Array.prototype.pop
 describe( "#pop", function() {
+
+  // it("delegates to Array.prototype", function() {
+  //   var col = c();
+  //   expect( col.pop ).to.equal( Array.prototype.pop );
+  // });
 
   it("does not change a collection into an array", function() {
     var col = c(["item"]);
@@ -89,24 +82,13 @@ describe( "#pop", function() {
 
 });
 
-describe( "#chainPop", function() {
-  var col = c([ 1, 2 ]);
-  var result;
-
-  it( "pops an item off of collection", function() {
-    expect( col.last() ).to.equal( 2 );
-    result = col.chainPop();
-    expect( col.last() ).to.equal( 1 );
-  });
-
-  it( "returns the collection", function(){
-    expect( result ).to.equal( col );
-  });
-
-});
-
 
 describe( "#shift", function() {
+
+  // it("delegates to Array.prototype", function() {
+  //   var col = c();
+  //   expect( col.shift ).to.equal( Array.prototype.shift )
+  // });
 
   it("does not change a collection into an array", function() {
     var col = c();
@@ -116,18 +98,14 @@ describe( "#shift", function() {
   
 });
 
-describe( "#chainShift", function() {
 
-  it( "shifts an item off of an array", function() {
-    var col = c([ 1, 2 ]);
-    var result = col.chainShift();
-    expect( col.first() ).to.equal( 2 );
-    expect( result ).to.equal( col );
-  });
-
-});
-
+// Collection.prototype.unshift === Array.prototype.unshift
 describe( "#unshift", function() {
+
+  // it("delegates to Array.prototype", function() {
+  //   var col = c();
+  //   expect( col.unshift ).to.equal( Array.prototype.unshift );
+  // });
 
   it("does not change a collection into an array", function() {
     var col = c(["item"]);
@@ -136,18 +114,6 @@ describe( "#unshift", function() {
   });
 
 });
-
-describe( "#chainUnshift", function() {
-
-  it( "unshifts an item off of an array", function() {
-    var col = c([ 2, 3 ]);
-    var result = col.chainUnshift( 1 );
-    expect( col.first() ).to.equal( 1 );
-    expect( result ).to.equal( col );
-  });
-
-});
-
 
 
 // Collection.prototype.forEach === Array.prototype.forEach
@@ -159,9 +125,9 @@ describe( "#forEach", function() {
   // });
 
   it("does not change a collection into an array", function() {
-    var col = c( helpers.range(0, 10) );
+    var col = c( range(0, 10) );
     var result;
-    col.forEach( function( el, i ){
+    col.forEach( function( el, i, arr ){
       result = el * i;
     });
     expect( col ).to.be.instanceof( c.ctor );
@@ -180,7 +146,7 @@ describe( "#concat", function() {
 
   it( "doesn't delegate to Array.prototype.concat", function() {
      var col = c();
-     expect( col.concat ).to.not.equal( Array.prototype.concat ); 
+     expect( c.concat ).to.not.equal( Array.prototype.concat ); 
   });
 
   it( "doesn't modify the original object", function() {
@@ -203,29 +169,29 @@ describe( "#slice", function() {
 
   it( "does not delegate to Array.prototype.slice", function() {
     var col = c();
-    expect( col.slice ).to.not.equal( Array.prototype.slice );
+    expect( c.slice ).to.not.equal( Array.prototype.slice );
   });
 
   it( "returns a collection", function() {
-    var col = c( helpers.range(0, 10) );
+    var col = c( range(0, 10) );
     var sliced = col.slice(1);
     expect( sliced ).to.be.instanceof( c.ctor );
   });
 
   it( "should work like Array.prototype.slice, WRT original item", function() {
-    var col = c( helpers.range(0, 10) );
-    var arr = helpers.range( 0, 10 );
+    var col = c( range(0, 10) );
+    var arr = range( 0, 10 );
     var slicedCol = col.slice( 1, 3 );
     var slicedArr = arr.slice( 1, 3 );
-    expect( helpers.haveSameValues( slicedCol, slicedArr ) ).to.equal( true );
+    expect( haveSameValues( col, arr ) ).to.be.true;
   });
 
   it( "should work like Array.prototype.slice, WRT return value", function() {
-    var col = c( helpers.range(0, 10) );
-    var arr = helpers.range( 0, 10 );
+    var col = c( range(0, 10) );
+    var arr = range( 0, 10 );
     var slicedCol = col.slice( 1, 3 );
     var slicedArr = arr.slice( 1, 3 );
-    expect( helpers.haveSameValues( slicedCol, slicedArr ) ).to.equal( true );
+    expect( haveSameValues( slicedCol, slicedArr ) ).to.be.true;
   });
 });
 
@@ -235,35 +201,35 @@ describe( "#splice", function() {
 
   it( "does not delegate to Array.prototype.splice", function() {
     var col = c();
-    expect( col.splice ).to.not.equal( Array.prototype.splice );
+    expect( c.splice ).to.not.equal( Array.prototype.splice );
   });
 
   it( "returns a collection", function() {
-    var col = c( helpers.range(0, 10) );
+    var col = c( range(0, 10) );
     var spliced = col.splice( 0, 2, "item" );
     expect( spliced ).to.be.instanceof( c.ctor );
   });
 
   it( "should leave the original item as a collection", function() {
-    var col = c( helpers.range(0, 10) );
-    col.splice( 0, 2, "item" );
+    var col = c( range(0, 10) );
+    var spliced = col.splice( 0, 2, "item" );
     expect( col ).to.be.instanceof( c.ctor );
   });
 
   it( "should work like Array.prototype.splice, WRT original item", function() {
-    var col = c( helpers.range(0, 10) );
-    var arr = helpers.range( 0, 10 );
+    var col = c( range(0, 10) );
+    var arr = range( 0, 10 );
     col.splice( 0, 2, "item" );
     arr.splice( 0, 2, "item" );
-    expect( helpers.haveSameValues( col, arr ) ).to.equal( true );
+    expect( haveSameValues( col, arr ) ).to.be.true;
   });
 
   it( "should work like Array.prototype.splice, WRT return value", function() {
-    var col = c( helpers.range(0, 10) );
-    var arr = helpers.range( 0, 10 );
+    var col = c( range(0, 10) );
+    var arr = range( 0, 10 );
     var splicedCol = col.splice( 0, 2, "item" );
     var splicedArr = arr.splice( 0, 2, "item" );
-    expect( helpers.haveSameValues( splicedCol, splicedArr ) ).to.equal( true );
+    expect( haveSameValues( splicedCol, splicedArr ) ).to.be.true;
   });
 
 });
@@ -292,7 +258,7 @@ describe( "#map", function() {
     };
     var arrMap = arr.map( mapFn );
     var colMap = col.map( mapFn );
-    expect( helpers.haveSameValues( arrMap, colMap ) ).to.equal( true );
+    expect( haveSameValues( arrMap, colMap ) ).to.be.true
   });
 
   it( "has an alias called COLLECT", function() {
@@ -311,14 +277,14 @@ describe( "#filter", function() {
   });
 
   it("produces the same values as Array.prototype.filter", function() {
-    var col = c( helpers.range(0, 10) );
-    var arr = helpers.range( 0, 10 );
+    var col = c( range(0, 10) );
+    var arr = range( 0, 10 );
     var filterFn = function( item ){
       return item % 3 === 0;
     };
     var colFilter = col.filter( filterFn );
     var arrFilter = arr.filter( filterFn );
-    expect( helpers.haveSameValues( colFilter, arrFilter ) ).to.equal( true );
+    expect( haveSameValues( colFilter, arrFilter ) ).to.be.true;
   });
 
   it("returns collections", function() {
@@ -331,7 +297,7 @@ describe( "#filter", function() {
 
   it( "has an alias called SELECT", function() {
     var col = c();
-    expect( col.filter ).to.equal( col.select );
+    expect( c.filter ).to.equal( c.select );
   });
 
 });
@@ -347,11 +313,11 @@ describe( "#reject" , function() {
   });
 
   it("works as expected", function() {
-    var col = c( helpers.range(0, 4) );
+    var col = c( range(0, 4) );
     var result = col.reject( function( item ){
       return item % 2 === 1;
     });
-    expect( helpers.haveSameValues( [0, 2], result ) ).to.equal( true );
+    expect( haveSameValues( [0, 2], result ) ).to.be.true;
   });
 
 });
@@ -359,11 +325,11 @@ describe( "#reject" , function() {
 describe( "#pluck", function() {
 
   it( "works like _.pluck", function() {
-    var col = c( helpers.userData() );
-    var arr = helpers.userData();
+    var col = c( userData() );
+    var arr = userData();
     var cPlucked = col.pluck( "name" );
     var aPlucked = _.pluck( arr, "name" );
-    expect( helpers.haveSameValues( cPlucked, aPlucked ) ).to.equal( true );
+    expect( haveSameValues( cPlucked, aPlucked ) ).to.be.true;
   });
 
 });
@@ -371,8 +337,8 @@ describe( "#pluck", function() {
 describe( "#find", function() {
 
   it( "works like _.find", function() {
-    var col = c( helpers.userData() );
-    var arr = helpers.userData();
+    var col = c( userData() );
+    var arr = userData();
     var findFn = function( item ){
       return item.age > 20;
     };
@@ -386,8 +352,8 @@ describe( "#find", function() {
 describe( "#findWhere", function() {
 
   it( "works like _.findWhere", function() {
-    var col = c( helpers.userData() );
-    var arr = helpers.userData();
+    var col = c( userData() );
+    var arr = userData();
     var testObj = { age: 20 };
     var cFound = col.findWhere( testObj );
     var aFound = _.findWhere( arr, testObj );
@@ -399,8 +365,8 @@ describe( "#findWhere", function() {
 describe( "#where", function() {
 
   it( "works like _.where", function() {
-    var col = c( helpers.userData() );
-    var arr = helpers.userData();
+    var col = c( userData() );
+    var arr = userData();
     var testObj = { age: 20 };
     var cFound = col.where( testObj );
     var aFound = _.where( arr, testObj );
@@ -410,7 +376,7 @@ describe( "#where", function() {
         pass = false;
       }
     }
-    expect( pass ).to.equal( true );
+    expect( pass ).to.be.true;
   });
 
 });
@@ -418,8 +384,8 @@ describe( "#where", function() {
 describe( "#invoke", function() {
   
   it( "works like _.invoke", function() {
-    var col = c( helpers.userData() );
-    var arr = helpers.userData();
+    var col = c( userData() );
+    var arr = userData();
     var fn = function() {
       this.lastName = this.name.split( "" ).reverse().join( "" );
     };
@@ -442,8 +408,8 @@ describe( "#without", function() {
 
   it( "removes multiple values passed to it", function() {
     var col = c( [1, 2, 3, 4, 5] );
-    var removedCol = col.without( 2, 4 );
-    expect( removedCol.toArray() ).to.deep.equal( [1, 3, 5] );
+    var removedCol = col.without( 3, 4 );
+    expect( removedCol.toArray() ).to.deep.equal( [1, 2, 5] );
   });
 
   it( "has an alias called REMOVE", function() {
@@ -459,8 +425,8 @@ describe( "#contains", function() {
     var obj = { key: "value" };
     var c1 = c( [10, 20, 30] );
     var c2 = c( ["a", obj, "b"] );
-    expect( c1.contains( 10 ) ).to.equal( true );
-    expect( c2.contains( obj ) ).to.equal( true );
+    expect( c1.contains( 10 ) ).to.be.true;
+    expect( c2.contains( obj ) ).to.be.true;
   });
 
 });
@@ -495,7 +461,7 @@ describe( "#partition", function() {
       return el % 2 === 0;
     };
     var cResult = cOriginal.partition( test ).map( function( el ) {
-      return el.toArray();
+      return el.toArray()
     }).toArray();
     var uResult = _.partition( original, test );
     expect( cResult ).to.deep.equal( uResult );
@@ -507,8 +473,8 @@ describe( "#union", function() {
     var a = [1, 2, 3, 4];
     var b = [3, 4, 5, 6];
     var d = [1, 2, 7, 8];
-    var cResult = c( a ).union( b, d ).toArray();
-    var uResult = _.union( a, b, d );
+    var cResult = c( a ).union( b, c ).toArray();
+    var uResult = _.union( a, b, c );
     expect( cResult ).to.deep.equal( uResult );
   });
 });
@@ -518,8 +484,8 @@ describe( "#intersection", function() {
     var a = [1, 2, 3, 4];
     var b = [3, 4, 5, 6];
     var d = [1, 2, 7, 8];
-    var cResult = c( a ).intersection( b, d ).toArray();
-    var uResult = _.intersection( a, b, d);
+    var cResult = c( a ).intersection( b, c ).toArray();
+    var uResult = _.intersection( a, b, c );
     expect( cResult ).to.deep.equal( uResult );
   });
 });
@@ -529,8 +495,8 @@ describe( "#difference", function() {
     var a = [1, 2, 3, 4];
     var b = [3, 4, 5, 6];
     var d = [1, 7, 8, 8];
-    var cResult = c( a ).difference( b, d ).toArray();
-    var uResult = _.difference( a, b, d );
+    var cResult = c( a ).difference( b, c ).toArray();
+    var uResult = _.difference( a, b, c );
     expect( cResult ).to.deep.equal( uResult );
   });
 });

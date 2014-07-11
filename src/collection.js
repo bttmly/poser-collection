@@ -2,10 +2,22 @@
 
 "use strict";
 module.exports = (function() {
+  
+  var poser = require( "poser" );
+  var Collection = poser.Array();
+  var fast = require( "../modules/fast.js" )( Collection );
+  
+  var cp = Collection.prototype;
+
+  // adds imperatives in a nice one liner.
+  require( "./mixin-imperatives.js" )( cp );
+
+  // this could be confusing, so dispose of it.
+  delete Collection.isArray;
 
   function isCollection( obj ) {
     return obj instanceof Collection;
-  }
+  };
 
   function isFunction( obj ) {
     return typeof obj === "function";
@@ -22,14 +34,6 @@ module.exports = (function() {
       }
     }
     return true;
-  }
-
-  function mixin( target, source ) {
-    var key;
-    for ( key in source ) {
-      target[key] = source[key];
-    }
-    return target;
   }
 
   function flip( fn ) {
@@ -92,24 +96,13 @@ module.exports = (function() {
     return null;
   }
 
-  var poser = require( "poser" );
-  var Collection = poser.Array();
-  var fast = require( "../modules/fast.js" )( Collection );
-  
-  var cp = Collection.prototype;
-
-  mixin( cp, require( "./imperatives" ) );
-
-  // this could be confusing, so dispose of it.
-  delete Collection.isArray;
-
   // helpers
-  // var slice = Function.prototype.call.bind( cp.slice );
+  var slice = Function.prototype.call.bind( cp.slice );
 
   // create chainable versions of these native methods
   ["push", "pop", "shift", "unshift"].forEach( function( method ) {
     // new methods will be named cPush, cPop, cShift, cUnshift
-    var name = "chain" + method.charAt( 0 ).toUpperCase() + method.slice( 1 );
+    var name = "c" + method.charAt( 0 ).toUpperCase() + method.slice( 1 );
     Collection.prototype[name] = function() {
       Collection.prototype[method].apply( this, arguments );
       return this;
@@ -136,7 +129,7 @@ module.exports = (function() {
         memo.push( el );
       }
       return memo;
-    }, new Collection(), thisArg );
+    }, new Collection() );
   };
 
   cp.indexOf = function( target ) {
@@ -152,7 +145,6 @@ module.exports = (function() {
   cp.collect = cp.map;
   cp.select = cp.filter;
 
-  // this could be optimized
   cp.forEachRight = function( fn ) {
     this.slice().reverse().each( fn );
   };
@@ -194,14 +186,15 @@ module.exports = (function() {
   };
 
   cp.pick = function() {
-    // fast arguments to array
-    var args = new Array( arguments.length );
+    // fast arguments array
+    var props = new Array( arguments.length );
     for ( var i = 0; i < args.length; i++ ) {
       args[i] = arguments[i];
     }
+    // var props = slice( arguments );
     return this.map( function( el ) {
       var obj = {};
-      args.each( function( prop ) {
+      props.each( function( prop ) {
         obj[prop] = el[prop];
       });
       return obj;
@@ -213,12 +206,12 @@ module.exports = (function() {
   };
 
   cp.invoke = function( fnOrMethod ) {
-    // fast arguments to array
-    // is this necessary? we're passing arugments to apply which doesn't break V8 optimization.
+    // fast arguments array
     var args = new Array( arguments.length - 1 );
     for ( var i = 0; i < args.length; i++ ) {
       args[i] = arguments[i + 1];
     }
+    // var args = slice( arguments, 1 );
     this.forEach( function( el ) {
       ( isFunction( fnOrMethod ) ? fnOrMethod : el[fnOrMethod] ).apply( el, args );
     });
@@ -226,11 +219,12 @@ module.exports = (function() {
   };
 
   cp.without = function() {
-    // fast arguments to array
+    // fast arguments array
     var args = new Array( arguments.length );
     for ( var i = 0; i < args.length; i++ ) {
       args[i] = arguments[i];
     }
+    // var args = slice( arguments );
     return this.reject( fast.partial( contains, args ) );
   };
   cp.remove = cp.without;
@@ -334,10 +328,10 @@ module.exports = (function() {
     }
     // var args = slice( arguments );
     this.each( function( el ) {
-      if ( args.every( not( fast.partial( flip( contains ), el ) ) ) ) {
-        result.push( el )
+      var notHas = args.every( not( fast.partial( flip( contains ), el ) ) );
+      if ( notHas ) {
+        result.push( el );
       }
-
     });
     return result;
   };
