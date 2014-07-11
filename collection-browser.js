@@ -342,22 +342,10 @@ module.exports = poser;
 
 "use strict";
 module.exports = (function() {
-  
-  var poser = _dereq_( "poser" );
-  var Collection = poser.Array();
-  var fast = _dereq_( "../modules/fast.js" )( Collection );
-  
-  var cp = Collection.prototype;
 
-  // adds imperatives in a nice one liner.
-  _dereq_( "./mixin-imperatives.js" )( cp );
-
-  // this could be confusing, so dispose of it.
-  delete Collection.isArray;
-
-  var isCollection = function( obj ) {
-    return obj instanceof this;
-  }.bind( Collection );
+  function isCollection( obj ) {
+    return obj instanceof Collection;
+  }
 
   function isFunction( obj ) {
     return typeof obj === "function";
@@ -374,6 +362,14 @@ module.exports = (function() {
       }
     }
     return true;
+  }
+
+  function mixin( target, source ) {
+    var key;
+    for ( key in source ) {
+      target[key] = source[key];
+    }
+    return target;
   }
 
   function flip( fn ) {
@@ -436,13 +432,24 @@ module.exports = (function() {
     return null;
   }
 
+  var poser = _dereq_( "poser" );
+  var Collection = poser.Array();
+  var fast = _dereq_( "../modules/fast.js" )( Collection );
+  
+  var cp = Collection.prototype;
+
+  mixin( cp, _dereq_( "./imperatives" ) );
+
+  // this could be confusing, so dispose of it.
+  delete Collection.isArray;
+
   // helpers
-  var slice = Function.prototype.call.bind( cp.slice );
+  // var slice = Function.prototype.call.bind( cp.slice );
 
   // create chainable versions of these native methods
   ["push", "pop", "shift", "unshift"].forEach( function( method ) {
     // new methods will be named cPush, cPop, cShift, cUnshift
-    var name = "c" + method.charAt( 0 ).toUpperCase() + method.slice( 1 );
+    var name = "chain" + method.charAt( 0 ).toUpperCase() + method.slice( 1 );
     Collection.prototype[name] = function() {
       Collection.prototype[method].apply( this, arguments );
       return this;
@@ -455,29 +462,29 @@ module.exports = (function() {
   };
 
   cp.map = function( fn, thisArg ) {
-    return fast.map.call( null, this, fn, thisArg );
+    return fast.map( this, fn, thisArg );
   };
 
   cp.reduce = function( fn, initialValue, thisArg ) {
-    return fast.reduce.call( null, this, fn, thisArg );
+    return fast.reduce( this, fn, thisArg );
   };
 
   cp.filter = function( fn, thisArg ) {
-    var results = new Collection();
-    fast.forEach.call( null, this, function( el, i, arr ) {
-      if ( fn( el, i, arr ) ) {
-        results.push( el );
+    return fast.reduce( this, function( memo, el, i, arr ) {
+      var result = fn( el, i, arr );
+      if ( result ) {
+        memo.push( el );
       }
-    });
-    return results;
+      return memo;
+    }, new Collection(), thisArg );
   };
 
   cp.indexOf = function( target ) {
-    return fast.indexOf.call( null, this, target );
+    return fast.indexOf( this, target );
   };
 
   cp.lastIndexOf = function( target ) {
-    return fast.lastIndexOf.call( null, this, target );
+    return fast.lastIndexOf( this, target );
   };
 
   // aliases for native methods.
@@ -485,6 +492,7 @@ module.exports = (function() {
   cp.collect = cp.map;
   cp.select = cp.filter;
 
+  // this could be optimized
   cp.forEachRight = function( fn ) {
     this.slice().reverse().each( fn );
   };
@@ -526,15 +534,14 @@ module.exports = (function() {
   };
 
   cp.pick = function() {
-    // fast arguments array
-    var props = new Array( arguments.length );
+    // fast arguments to array
+    var args = new Array( arguments.length );
     for ( var i = 0; i < args.length; i++ ) {
       args[i] = arguments[i];
     }
-    // var props = slice( arguments );
     return this.map( function( el ) {
       var obj = {};
-      props.each( function( prop ) {
+      args.each( function( prop ) {
         obj[prop] = el[prop];
       });
       return obj;
@@ -546,12 +553,12 @@ module.exports = (function() {
   };
 
   cp.invoke = function( fnOrMethod ) {
-    // fast arguments array
+    // fast arguments to array
+    // is this necessary? we're passing arugments to apply which doesn't break V8 optimization.
     var args = new Array( arguments.length - 1 );
     for ( var i = 0; i < args.length; i++ ) {
       args[i] = arguments[i + 1];
     }
-    // var args = slice( arguments, 1 );
     this.forEach( function( el ) {
       ( isFunction( fnOrMethod ) ? fnOrMethod : el[fnOrMethod] ).apply( el, args );
     });
@@ -559,12 +566,11 @@ module.exports = (function() {
   };
 
   cp.without = function() {
-    // fast arguments array
+    // fast arguments to array
     var args = new Array( arguments.length );
     for ( var i = 0; i < args.length; i++ ) {
       args[i] = arguments[i];
     }
-    // var args = slice( arguments );
     return this.reject( fast.partial( contains, args ) );
   };
   cp.remove = cp.without;
@@ -668,10 +674,10 @@ module.exports = (function() {
     }
     // var args = slice( arguments );
     this.each( function( el ) {
-      var notHas = args.every( not( fast.partial( flip( contains ), el ) ) );
-      if ( notHas ) {
-        result.push( el );
+      if ( args.every( not( fast.partial( flip( contains ), el ) ) ) ) {
+        result.push( el )
       }
+
     });
     return result;
   };
@@ -752,69 +758,73 @@ module.exports = (function() {
   return factory;
 
 })();
-},{"../modules/fast.js":1,"./mixin-imperatives.js":5,"poser":2}],5:[function(_dereq_,module,exports){
-module.exports = function mixinImperatives( proto ) {
+},{"../modules/fast.js":1,"./imperatives":5,"poser":2}],5:[function(_dereq_,module,exports){
+"use strict";
 
-    function matches( against, obj ) {
-    for ( var prop in against ) {
-      if ( obj[prop] !== against[prop] ) { 
-        return false;
-      }
+function matches( against, obj ) {
+  for ( var prop in against ) {
+    if ( obj[prop] !== against[prop] ) { 
+      return false;
     }
-    return true;
   }
+  return true;
+}
 
-  proto.imperativeWhere = function( obj ) {
+var methods = {
+  imperativeWhere: function( obj ) {
     var results = [];
     var i = 0;
     var len = this.length;
-    var key;
     while ( i < len ) {
       if ( matches( this[i], obj ) ) {
         results.push( this[i] );
       }
-      i++
+      i++;
     }
     return results;
-  };
+  },
 
-  proto.imperativeWhereNot = function( obj ) {
+  imperativeWhereNot: function( obj ) {
     var results = [];
     var i = 0;
     var len = this.length;
-    var key;
     while ( i < len ) {
       if ( !matches( this[i], obj ) ) {
         results.push( this[i] );
       }
-      i++
+      i++;
     }
     return results;
-  };
+  },
 
-  proto.imperativeFind = function( testFn ) {
+  imperativeFind: function( testFn ) {
     var i = 0;
     var len = this.length;
     while ( i < len ) {
       if ( testFn( this[i], i, this ) ) {
         return this[i];
       }
-      i++
+      i++;
     }
     return null;
-  };
+  },
 
-  proto.imperativeFindWhere = function( obj ) {
-    fn = function( item ) { return matches( item, obj ) };
+  imperativeFindWhere: function( obj ) {
+    var fn = function( item ) { 
+      return matches( item, obj );
+    };
     return this.imperativeFind( fn );
-  };
+  },
 
-  proto.imperativeFindWhereNot = function( obj ) {
-    fn = function( item ) { return !matches( item, obj ) };
+  imperativeFindWhereNot: function( obj ) {
+    var fn = function( item ) { 
+      return !matches( item, obj );
+    };
     return this.imperativeFind( fn );
-  };
-
+  }
 };
+
+module.exports = methods;
 
 
 },{}],6:[function(_dereq_,module,exports){
