@@ -15,9 +15,9 @@ module.exports = (function() {
   // this could be confusing, so dispose of it.
   delete Collection.isArray;
 
-  var isCollection = function( obj ) {
-    return obj instanceof this;
-  }.bind( Collection );
+  function isCollection( obj ) {
+    return obj instanceof Collection;
+  };
 
   function isFunction( obj ) {
     return typeof obj === "function";
@@ -126,8 +126,8 @@ module.exports = (function() {
       if ( fn( el, i, arr ) ) {
         results.push( el );
       }
-    });
-    return results;
+      return memo;
+    }, new Collection(), thisArg );
   };
 
   cp.indexOf = function( target ) {
@@ -184,7 +184,12 @@ module.exports = (function() {
   };
 
   cp.pick = function() {
-    var props = slice( arguments );
+    // fast arguments array
+    var props = new Array( arguments.length );
+    for ( var i = 0; i < args.length; i++ ) {
+      args[i] = arguments[i];
+    }
+    // var props = slice( arguments );
     return this.map( function( el ) {
       var obj = {};
       props.each( function( prop ) {
@@ -199,7 +204,12 @@ module.exports = (function() {
   };
 
   cp.invoke = function( fnOrMethod ) {
-    var args = slice( arguments, 1 );
+    // fast arguments array
+    var args = new Array( arguments.length - 1 );
+    for ( var i = 0; i < args.length; i++ ) {
+      args[i] = arguments[i + 1];
+    }
+    // var args = slice( arguments, 1 );
     this.forEach( function( el ) {
       ( isFunction( fnOrMethod ) ? fnOrMethod : el[fnOrMethod] ).apply( el, args );
     });
@@ -207,8 +217,13 @@ module.exports = (function() {
   };
 
   cp.without = function() {
-    var args = slice( arguments );
-    return this.reject( partial( contains, args ) );
+    // fast arguments array
+    var args = new Array( arguments.length );
+    for ( var i = 0; i < args.length; i++ ) {
+      args[i] = arguments[i];
+    }
+    // var args = slice( arguments );
+    return this.reject( fast.partial( contains, args ) );
   };
   cp.remove = cp.without;
 
@@ -300,7 +315,7 @@ module.exports = (function() {
     var result = new Collection();
     var args = slice( arguments );
     this.each( function( el ) {
-      var notHas = args.every( not( partial( flip( contains ), el ) ) );
+      var notHas = args.every( not( fast.partial( flip( contains ), el ) ) );
       if ( notHas ) {
         result.push( el );
       }
