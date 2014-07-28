@@ -9,9 +9,6 @@ module.exports = (function() {
   
   var cp = Collection.prototype;
 
-  // adds imperatives in a nice one liner.
-  require( "./mixin-imperatives.js" )( cp );
-
   // this could be confusing, so dispose of it.
   delete Collection.isArray;
 
@@ -25,6 +22,14 @@ module.exports = (function() {
 
   function isArrayLike( obj ) {
     return Object.prototype.toString.call( obj ) === "[object Array]";
+  }
+
+  function mixin( target, source ) {
+    var key;
+    for ( key in source ) {
+      target[key] = source[key];
+    }
+    return target;
   }
 
   function matches( against, obj ) {
@@ -94,6 +99,8 @@ module.exports = (function() {
     return null;
   }
 
+  mixin( cp, require( "./imperatives.js" ) );
+  
   // helpers
   var slice = Function.prototype.call.bind( cp.slice );
 
