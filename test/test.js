@@ -3,13 +3,13 @@
 var expect = require( "chai" ).expect;
 var helpers = require( "./helpers" );
 
-var _ = require( 'underscore' );
+var _ = require( "underscore" );
 
 var range = helpers.range;
 var haveSameValues = helpers.haveSameValues;
 var userData = helpers.userData;
 
-var c = require( '..' );
+var c = require( ".." );
 
 function match( obj, against ){
   for ( var prop in against ) {
@@ -65,7 +65,7 @@ describe("factory", function () {
     expect( col ).to.be.instanceof( c.ctor );
     expect( col.length ).to.equal( 1 );
     expect( col.toArray() ).to.deep.equal( new Array( "a" ) );
-  })
+  });
 
 });
 
@@ -494,7 +494,7 @@ describe( "#partition", function() {
       return el % 2 === 0;
     };
     var cResult = cOriginal.partition( test ).map( function( el ) {
-      return el.toArray()
+      return el.toArray();
     }).toArray();
     var uResult = _.partition( original, test );
     expect( cResult ).to.deep.equal( uResult );
@@ -544,7 +544,43 @@ describe( "#zip", function () {
   it( "leaves 'undefined' where array lengths differ", function () {
     var cArr = c(["moe", "larry", "curly"]);
     var expected = [["moe", 30, true], ["larry", 40, undefined], ["curly", undefined, undefined]];
-    var cZip = cArr.zip( [30, 40], [true] ).invoke( "toArray" ).toArray();
+    var cZip = cArr.zip( [30, 40], [true] );
     expect( JSON.stringify( cZip ) ).to.equal( JSON.stringify( expected ) );
+  });
+});
+
+describe( "#min", function () {
+  it( "works when not called with an argument", function () {
+    expect( c([ 10, 100, 30, 70 ]).max() ).to.equal( 100 );
+  });
+  it( "returns NaN if no argument and no numbers", function () {
+    expect( isNaN( c([ "a", "b", "z", "d" ]).max() ) ).to.equal( true );
+  });
+  it( "returns the max value of a property", function () {
+    expect( c( userData() ).max( "age" ) ).to.equal( 40 );
+  });
+});
+
+describe( "#min", function () {
+  it( "works when not called with an argument", function () {
+    expect( c([ 10, 100, 30, 70 ]).min() ).to.equal( 10 );
+  });
+  it( "returns NaN if no argument and no numbers", function () {
+    expect( isNaN( c([ "a", "b", "z", "d" ]).min() ) ).to.equal( true );
+  });
+  it( "returns the max value of a property", function () {
+    expect( c( userData() ).min( "age" ) ).to.equal( 20 );
+  });
+});
+
+describe( "#extent", function () {
+  it( "works when not called with an argument", function () {
+    expect( c([ 10, 100, 30, 70 ]).extent() ).to.deep.equal([ 10, 100 ]);
+  });
+  it( "returns NaN if no argument and no numbers", function () {
+    expect( isNaN( c([ "a", "b", "z", "d" ]).extent()[0] ) ).to.equal( true );
+  });
+  it( "returns the max value of a property", function () {
+    expect( c( userData() ).extent( "age" ) ).to.deep.equal([ 20, 40 ]);
   });
 });

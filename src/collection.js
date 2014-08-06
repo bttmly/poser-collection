@@ -377,13 +377,10 @@ module.exports = (function() {
   };
 
   cp.zip = function() {
-
     var args = new Collection( arguments.length );
-
     for ( var i = 0; i < args.length; i++ ) {
       args[i] = arguments[i];
     }
-
     return args
       .cUnshift( this )
       .map( factoryOne )
