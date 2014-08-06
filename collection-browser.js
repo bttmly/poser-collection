@@ -337,7 +337,7 @@ function poser (type) {
 
 module.exports = poser;
 
-},{"vm":5}],4:[function(_dereq_,module,exports){
+},{"vm":6}],4:[function(_dereq_,module,exports){
 /*! collection- v0.0.0 - MIT license */
 
 "use strict";
@@ -349,12 +349,15 @@ module.exports = (function() {
   
   var cp = Collection.prototype;
 
+  // adds imperatives in a nice one liner.
+  _dereq_( "./mixin-imperatives.js" )( cp );
+
   // this could be confusing, so dispose of it.
   delete Collection.isArray;
 
-  var isCollection = function( obj ) {
-    return obj instanceof this;
-  }.bind( Collection );
+  function isCollection( obj ) {
+    return obj instanceof Collection;
+  };
 
   function isFunction( obj ) {
     return typeof obj === "function";
@@ -458,13 +461,13 @@ module.exports = (function() {
   };
 
   cp.filter = function( fn, thisArg ) {
-    var results = new Collection();
+    var results = [];
     fast.forEach.call( null, this, function( el, i, arr ) {
       if ( fn( el, i, arr ) ) {
         results.push( el );
       }
-    });
-    return results;
+      return memo;
+    }, new Collection(), thisArg );
   };
 
   cp.indexOf = function( target ) {
@@ -521,7 +524,12 @@ module.exports = (function() {
   };
 
   cp.pick = function() {
-    var props = slice( arguments );
+    // fast arguments array
+    var props = new Array( arguments.length );
+    for ( var i = 0; i < args.length; i++ ) {
+      args[i] = arguments[i];
+    }
+    // var props = slice( arguments );
     return this.map( function( el ) {
       var obj = {};
       props.each( function( prop ) {
@@ -536,7 +544,12 @@ module.exports = (function() {
   };
 
   cp.invoke = function( fnOrMethod ) {
-    var args = slice( arguments, 1 );
+    // fast arguments array
+    var args = new Array( arguments.length - 1 );
+    for ( var i = 0; i < args.length; i++ ) {
+      args[i] = arguments[i + 1];
+    }
+    // var args = slice( arguments, 1 );
     this.forEach( function( el ) {
       ( isFunction( fnOrMethod ) ? fnOrMethod : el[fnOrMethod] ).apply( el, args );
     });
@@ -544,8 +557,13 @@ module.exports = (function() {
   };
 
   cp.without = function() {
-    var args = slice( arguments );
-    return this.reject( partial( contains, args ) );
+    // fast arguments array
+    var args = new Array( arguments.length );
+    for ( var i = 0; i < args.length; i++ ) {
+      args[i] = arguments[i];
+    }
+    // var args = slice( arguments );
+    return this.reject( fast.partial( contains, args ) );
   };
   cp.remove = cp.without;
 
@@ -637,7 +655,7 @@ module.exports = (function() {
     var result = new Collection();
     var args = slice( arguments );
     this.each( function( el ) {
-      var notHas = args.every( not( partial( flip( contains ), el ) ) );
+      var notHas = args.every( not( fast.partial( flip( contains ), el ) ) );
       if ( notHas ) {
         result.push( el );
       }
@@ -721,7 +739,72 @@ module.exports = (function() {
   return factory;
 
 })();
-},{"../modules/fast.js":1,"poser":2}],5:[function(_dereq_,module,exports){
+},{"../modules/fast.js":1,"./mixin-imperatives.js":5,"poser":2}],5:[function(_dereq_,module,exports){
+module.exports = function mixinImperatives( proto ) {
+
+    function matches( against, obj ) {
+    for ( var prop in against ) {
+      if ( obj[prop] !== against[prop] ) { 
+        return false;
+      }
+    }
+    return true;
+  }
+
+  proto.imperativeWhere = function( obj ) {
+    var results = [];
+    var i = 0;
+    var len = this.length;
+    var key;
+    while ( i < len ) {
+      if ( matches( this[i], obj ) ) {
+        results.push( this[i] );
+      }
+      i++
+    }
+    return results;
+  };
+
+  proto.imperativeWhereNot = function( obj ) {
+    var results = [];
+    var i = 0;
+    var len = this.length;
+    var key;
+    while ( i < len ) {
+      if ( !matches( this[i], obj ) ) {
+        results.push( this[i] );
+      }
+      i++
+    }
+    return results;
+  };
+
+  proto.imperativeFind = function( testFn ) {
+    var i = 0;
+    var len = this.length;
+    while ( i < len ) {
+      if ( testFn( this[i], i, this ) ) {
+        return this[i];
+      }
+      i++
+    }
+    return null;
+  };
+
+  proto.imperativeFindWhere = function( obj ) {
+    fn = function( item ) { return matches( item, obj ) };
+    return this.imperativeFind( fn );
+  };
+
+  proto.imperativeFindWhereNot = function( obj ) {
+    fn = function( item ) { return !matches( item, obj ) };
+    return this.imperativeFind( fn );
+  };
+
+};
+
+
+},{}],6:[function(_dereq_,module,exports){
 var indexOf = _dereq_('indexof');
 
 var Object_keys = function (obj) {
@@ -861,7 +944,7 @@ exports.createContext = Script.createContext = function (context) {
     return copy;
 };
 
-},{"indexof":6}],6:[function(_dereq_,module,exports){
+},{"indexof":7}],7:[function(_dereq_,module,exports){
 
 var indexOf = [].indexOf;
 

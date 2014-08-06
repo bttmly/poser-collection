@@ -1,5 +1,16 @@
 "use strict";
 
+var expect = require( "chai" ).expect;
+var helpers = require( "./helpers" );
+
+var _ = require( 'underscore' );
+
+var range = helpers.range;
+var haveSameValues = helpers.haveSameValues;
+var userData = helpers.userData;
+
+var c = require( '..' );
+
 function match( obj, against ){
   for ( var prop in against ) {
     if ( obj[prop] !== against[prop] ) {
@@ -95,7 +106,7 @@ describe( "#shift", function() {
     col.shift("item");
     expect( col ).to.be.instanceof( c.ctor );
   });
-  
+
 });
 
 
@@ -146,7 +157,7 @@ describe( "#concat", function() {
 
   it( "doesn't delegate to Array.prototype.concat", function() {
      var col = c();
-     expect( c.concat ).to.not.equal( Array.prototype.concat ); 
+     expect( c.concat ).to.not.equal( Array.prototype.concat );
   });
 
   it( "doesn't modify the original object", function() {
@@ -303,7 +314,7 @@ describe( "#filter", function() {
 });
 
 describe( "#reject" , function() {
-  
+
   it("returns collections", function() {
     var col = c([1,2,3]);
     var result = col.reject( function( item ){
@@ -382,7 +393,7 @@ describe( "#where", function() {
 });
 
 describe( "#invoke", function() {
-  
+
   it( "works like _.invoke", function() {
     var col = c( userData() );
     var arr = userData();
@@ -393,7 +404,7 @@ describe( "#invoke", function() {
     var invokedArr = _.invoke( arr, fn );
     expect( col.toArray() ).to.deep.equal( arr );
     expect( col[0] ).to.have.property( "lastName" );
-    expect( arr[0] ).to.have.property( "lastName" );  
+    expect( arr[0] ).to.have.property( "lastName" );
   });
 
 });
@@ -431,7 +442,7 @@ describe( "#contains", function() {
 
 });
 
-// 
+//
 describe( "#forEachRight", function() {
   it("iterates over an array in reverse order", function(){
     var original = c( [1, 2, 3, 4, 5] );
