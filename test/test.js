@@ -511,3 +511,22 @@ describe( "#difference", function() {
     expect( cResult ).to.deep.equal( uResult );
   });
 });
+
+describe( "#zip", function () {
+  it( "works like _.zip with arrays of equal length", function () {
+    var cArr = c(["moe", "larry", "curly"]);
+    var expected = [["moe", 30, true], ["larry", 40, false], ["curly", 50, false]];
+    var cZip = cArr.zip( [30, 40, 50], [true, false, false] ).map( function ( arr ) {
+      return arr.toArray();
+    }).toArray();
+    expect( cZip ).to.deep.equal( expected );
+  });
+  it( "leaves 'undefined' where array lengths differ", function () {
+    var cArr = c(["moe", "larry", "curly"]);
+    var expected = [["moe", 30, true], ["larry", 40, undefined], ["curly", undefined, undefined]];
+    var cZip = cArr.zip( [30, 40], [true] ).map( function ( arr ) {
+      return arr.toArray();
+    }).toArray();
+    expect( cZip ).to.deep.equal( expected );
+  });
+});
