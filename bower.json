@@ -1,6 +1,6 @@
 {
-  "name": "collection-",
-  "private": true,
+  "name": "super-collection",
+  "private": false,
   "dependencies": {},
   "devDependencies": {
     "chai": "~1.8.0",

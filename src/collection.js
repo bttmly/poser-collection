@@ -112,7 +112,6 @@ module.exports = (function() {
 
   ["forEach", "map", "reduce", "filter", "some", "every"].forEach( function( method ) {
     var name = "slow" + method.charAt( 0 ).toUpperCase()  + method.slice( 1 );
-    console.log( name );
     var prev = Collection.prototype[method];
     Collection.prototype[name] = function() {
       return prev.apply( this, arguments );
@@ -149,7 +148,7 @@ module.exports = (function() {
   };
 
   cp.some = function( fn, thisContext ) {
-    return fast.some( this, fn, target );
+    return fast.some( this, fn, thisContext );
   };
 
   // aliases for native methods.
@@ -198,12 +197,10 @@ module.exports = (function() {
   };
 
   cp.pick = function() {
-    // fast arguments array
     var props = new Array( arguments.length );
     for ( var i = 0; i < args.length; i++ ) {
       args[i] = arguments[i];
     }
-    // var props = slice( arguments );
     return this.map( function( el ) {
       var obj = {};
       props.each( function( prop ) {
