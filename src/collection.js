@@ -21,21 +21,21 @@ module.exports = (function() {
     return Object.prototype.toString.call( obj ) === "[object Array]";
   }
 
+  function keys( obj ) {
+    return factory( Object.keys( obj ) );
+  }
+
   function mixin( target, source ) {
-    var key;
-    for ( key in source ) {
+    keys( source ).each( function ( key ) {
       target[key] = source[key];
-    }
+    });
     return target;
   }
 
   function matches( against, obj ) {
-    for ( var prop in against ) {
-      if ( obj[prop] !== against[prop] ) {
-        return false;
-      }
-    }
-    return true;
+    return keys( against ).every( function ( key ) {
+      return obj[key] === against[key];
+    });
   }
 
   function flip( fn ) {
