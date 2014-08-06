@@ -60,6 +60,10 @@ module.exports = (function() {
     return cp.indexOf.call( obj, value ) > -1;
   }
 
+  function containsReverse( value, obj ) {
+    return cp.indexOf.call( obj, value ) > -1;
+  }
+
   function isTruthy( value ) {
     return !!value;
   }
@@ -88,8 +92,6 @@ module.exports = (function() {
     }
     return null;
   }
-
-  mixin( cp, require( "./imperatives.js" ) );
 
   // helpers
   var slice = Function.prototype.call.bind( cp.slice );
@@ -302,7 +304,7 @@ module.exports = (function() {
     var result = new Collection();
     var args = slice( arguments );
     this.each( function( el ) {
-      var has = args.every( partial( flip( contains ), el ) );
+      var has = args.every( fast.partial( containsReverse, el ) );
       if ( has ) {
         result.push( el );
       }
@@ -314,7 +316,7 @@ module.exports = (function() {
     var result = new Collection();
     var args = slice( arguments );
     this.each( function( el ) {
-      var notHas = args.every( not( fast.partial( flip( contains ), el ) ) );
+      var notHas = args.every( not( fast.partial( containsReverse, el ) ) );
       if ( notHas ) {
         result.push( el );
       }
@@ -382,7 +384,9 @@ module.exports = (function() {
     return Array.prototype.slice.call( this );
   };
 
-  var factory = function( arr ) {
+  mixin( cp, require( "./imperatives.js" ) );
+
+  function factory( arr ) {
     if ( arr == null ) {
       arr = [];
     }
