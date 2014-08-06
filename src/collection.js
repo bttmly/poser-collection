@@ -44,10 +44,14 @@ module.exports = (function() {
     };
   }
 
-  function get ( prop ) {
+  function get( prop ) {
     return function ( obj ) {
       return obj[prop];
     };
+  }
+
+  function getSkip( _, idx ) {
+    return get( idx );
   }
 
   function not( fn ) {
@@ -103,6 +107,15 @@ module.exports = (function() {
     Collection.prototype[name] = function() {
       Collection.prototype[method].apply( this, arguments );
       return this;
+    };
+  });
+
+  ["forEach", "map", "reduce", "filter", "some", "every"].forEach( function( method ) {
+    var name = "slow" + method.charAt( 0 ).toUpperCase()  + method.slice( 1 );
+    console.log( name );
+    var prev = Collection.prototype[method];
+    Collection.prototype[name] = function() {
+      return prev.apply( this, arguments );
     };
   });
 
@@ -364,15 +377,18 @@ module.exports = (function() {
   };
 
   cp.zip = function() {
+
     var args = new Collection( arguments.length );
+
     for ( var i = 0; i < args.length; i++ ) {
       args[i] = arguments[i];
     }
+
     return args
-      .map( factory )
       .cUnshift( this )
+      .map( factoryOne )
       .sortBy( "length" )
-      .reverse()[0]
+      .last()
       .map( function ( item, i ) {
         return args.map( get( i ) );
       });
@@ -402,23 +418,35 @@ module.exports = (function() {
 
   mixin( cp, require( "./imperatives.js" ) );
 
-  function factory ( arg ) {
+  function factory () {
+    var len = arguments.length;
     var args;
-    // transform an array into a collection w same values
-    if ( isArrayLike( arg ) ) {
-      return new Collection().concat( arg );
-    // as in new Array(2) => [undefined, undefined]
-    } else if ( typeof arg === "number" ) {
-      return new Collection( arg );
-    // otherwise as in new Array('a', 'b') => ['a', 'b']
-    } else {
-      args = new Array( arguments.length );
-      for ( var i = 0; i < args.length; i++ ) {
-        args[i] = arguments[i];
-      }
-      return new Collection().concat( args );
+    var ret;
+
+    if ( len === 0 ) {
+      return new Collection();
     }
-  };
+
+    if ( len === 1 && isArrayLike( arguments[0] ) ) {
+      ret = new Collection();
+      cp.push.apply( ret, arguments[0] );
+      return ret;
+    }
+
+    if ( len === 1 && typeof arguments[0] === "number") {
+      return new Collection( arguments[0] );
+    }
+
+    args = new Collection( len );
+    for ( var i = 0; i < args.length; i++ ) {
+      args[i] = arguments[i];
+    }
+    return factory( args );
+  }
+
+  function factoryOne () {
+    return factory( arguments[0] );
+  }
 
   factory.ctor = Collection;
   factory.proto = Collection.prototype;
