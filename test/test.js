@@ -27,24 +27,46 @@ function strictMatch( obj, against ){
   return match( obj, against );
 }
 
-describe("collection", function () {
+describe("factory", function () {
 
   it("exists", function () {
     expect( c ).to.be.a( "function" );
   });
 
-  it("creates collections", function() {
+  it("works with zero arguments", function() {
     var col = c();
     expect( col ).to.be.instanceof( c.ctor );
+    expect( col.length ).to.equal( 0 );
   });
 
-  // collections are instances of "borrowed constructors"
-  // it("creates collections that inherit from array", function() {
-  //   var col = c();
-  //   expect( col ).to.be.instanceof( Array );
-  // });
+  it("turns an array into a collection, if array is only argument", function () {
+    var col = c([ 1, 2, 3 ]);
+    expect( col ).to.be.instanceof( c.ctor );
+    expect( col.length ).to.equal( 3 );
+    expect( col.toArray() ).to.deep.equal([ 1, 2, 3 ]);
+  });
 
-  // Add more assertions here
+  it("works like new Array() when passed a number as its only argument", function () {
+    var col = c( 3 );
+    expect( col ).to.be.instanceof( c.ctor );
+    expect( col.length ).to.equal( 3 )
+    expect( col.toArray() ).to.deep.equal( new Array( 3 ) );
+  });
+
+  it("works like new Array() when passed multiple arguments", function () {
+    var col = c( 1, "a", [] );
+    expect( col ).to.be.instanceof( c.ctor );
+    expect( col.length ).to.equal( 3 );
+    expect( col.toArray() ).to.deep.equal( new Array( 1, "a", []) );
+  });
+
+  it("works like new Array() when passed a single non-array-like argument" , function () {
+    var col = c( "a" );
+    expect( col ).to.be.instanceof( c.ctor );
+    expect( col.length ).to.equal( 1 );
+    expect( col.toArray() ).to.deep.equal( new Array( "a" ) );
+  })
+
 });
 
 // Collection.prototype.toArray
@@ -516,17 +538,13 @@ describe( "#zip", function () {
   it( "works like _.zip with arrays of equal length", function () {
     var cArr = c(["moe", "larry", "curly"]);
     var expected = [["moe", 30, true], ["larry", 40, false], ["curly", 50, false]];
-    var cZip = cArr.zip( [30, 40, 50], [true, false, false] ).map( function ( arr ) {
-      return arr.toArray();
-    }).toArray();
-    expect( cZip ).to.deep.equal( expected );
+    var cZip = cArr.zip( [30, 40, 50], [true, false, false] );
+    expect( JSON.stringify( cZip ) ).to.equal( JSON.stringify( expected ) );
   });
   it( "leaves 'undefined' where array lengths differ", function () {
     var cArr = c(["moe", "larry", "curly"]);
     var expected = [["moe", 30, true], ["larry", 40, undefined], ["curly", undefined, undefined]];
-    var cZip = cArr.zip( [30, 40], [true] ).map( function ( arr ) {
-      return arr.toArray();
-    }).toArray();
-    expect( cZip ).to.deep.equal( expected );
+    var cZip = cArr.zip( [30, 40], [true] ).invoke( "toArray" ).toArray();
+    expect( JSON.stringify( cZip ) ).to.equal( JSON.stringify( expected ) );
   });
 });
