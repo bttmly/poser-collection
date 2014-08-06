@@ -1,7 +1,9 @@
+"use strict";
+
 var range = function( start, end ){
   if ( start === undefined ) {
-    var end = start;
-    var start = 0;
+    end = start;
+    start = 0;
   }
   var results = [];
   while ( start < end ){
@@ -9,20 +11,22 @@ var range = function( start, end ){
     start++;
   }
   return results;
-}
+};
 
 var haveSameValues = function( a, b ){
-  for ( var i = 0; i < a.length; i++ ){
-    if ( a[i] !== b[i] ) return false;
+  for ( var i = 0; i < a.length; i++ ) {
+    if ( a[i] !== b[i] ) {
+      return false;
+    }
   }
   return true;
 };
 
-var getName = function(){
+var getName = function () {
   return this.name;
 };
 
-var userData = function( addMethod ){
+var userData = function ( addMethod ) {
   var o = [
     {
       name: "Alex",
@@ -56,4 +60,11 @@ var userData = function( addMethod ){
     }
   }
   return o;
-}
+};
+
+module.exports = {
+  range: range,
+  haveSameValues: haveSameValues,
+  getName: getName,
+  userData: userData
+};
