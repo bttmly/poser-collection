@@ -205,12 +205,10 @@ module.exports = (function() {
   };
 
   cp.invoke = function( fnOrMethod ) {
-    // fast arguments array
     var args = new Array( arguments.length - 1 );
     for ( var i = 0; i < args.length; i++ ) {
       args[i] = arguments[i + 1];
     }
-    // var args = slice( arguments, 1 );
     this.forEach( function( el ) {
       ( isFunction( fnOrMethod ) ? fnOrMethod : el[fnOrMethod] ).apply( el, args );
     });
@@ -218,12 +216,10 @@ module.exports = (function() {
   };
 
   cp.without = function() {
-    // fast arguments array
     var args = new Array( arguments.length );
     for ( var i = 0; i < args.length; i++ ) {
       args[i] = arguments[i];
     }
-    // var args = slice( arguments );
     return this.reject( fast.partial( contains, args ) );
   };
   cp.remove = cp.without;
@@ -302,7 +298,10 @@ module.exports = (function() {
 
   cp.intersection = function() {
     var result = new Collection();
-    var args = slice( arguments );
+    var args = new Array( arguments.length );
+    for ( var i = 0; i < args.length; i++ ) {
+      args[i] = arguments[i];
+    }
     this.each( function( el ) {
       var has = args.every( fast.partial( containsReverse, el ) );
       if ( has ) {
@@ -314,7 +313,10 @@ module.exports = (function() {
 
   cp.difference = function() {
     var result = new Collection();
-    var args = slice( arguments );
+    var args = new Array( arguments.length );
+    for ( var i = 0; i < args.length; i++ ) {
+      args[i] = arguments[i];
+    }
     this.each( function( el ) {
       var notHas = args.every( not( fast.partial( containsReverse, el ) ) );
       if ( notHas ) {
@@ -335,27 +337,30 @@ module.exports = (function() {
   };
   cp.uniq = cp.unique;
 
+  // ripped off from Underscore
   cp.sortBy = function( itr, ctx ) {
     itr = iterator( itr );
-    return cp.pluck.call( this.map( function( val, i, obj ) {
-      return {
-        val: val,
-        i: i,
-        param: itr.call( ctx, val, i, obj )
-      };
-    }).sort( function( left, right ) {
-      var a = left.param;
-      var b = right.param;
-      if ( a !== b ) {
-        if ( a > b || a === undefined ) {
-          return 1;
+    return cp.pluck.call(
+      this.map( function( val, i, obj ) {
+        return {
+          val: val,
+          i: i,
+          param: itr.call( ctx, val, i, obj )
+        };
+      }).sort( function( left, right ) {
+        var a = left.param;
+        var b = right.param;
+        if ( a !== b ) {
+          if ( a > b || a === undefined ) {
+            return 1;
+          }
+          if ( a < b || b === undefined ) {
+            return -1;
+          }
         }
-        if ( a < b || b === undefined ) {
-          return -1;
-        }
-      }
-      return left.index - right.index;
-    }), "val" );
+        return left.index - right.index;
+      }),
+    "val" );
   };
 
   // TODO
