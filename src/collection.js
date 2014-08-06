@@ -363,9 +363,20 @@ module.exports = (function() {
     "val" );
   };
 
-  // TODO
-  // cp.zip = function() {
-  // };
+  cp.zip = function() {
+    var args = new Collection( arguments.length );
+    for ( var i = 0; i < args.length; i++ ) {
+      args[i] = arguments[i];
+    }
+    return args
+      .map( factory )
+      .cUnshift( this )
+      .sortBy( "length" )
+      .reverse()[0]
+      .map( function ( item, i ) {
+        return args.map( get( i ) );
+      });
+  };
 
   cp.min = function( prop ) {
     if ( prop ) {
@@ -391,11 +402,22 @@ module.exports = (function() {
 
   mixin( cp, require( "./imperatives.js" ) );
 
-  function factory( arr ) {
-    if ( arr == null ) {
-      arr = [];
+  function factory ( arg ) {
+    var args;
+    // transform an array into a collection w same values
+    if ( isArrayLike( arg ) ) {
+      return new Collection().concat( arg );
+    // as in new Array(2) => [undefined, undefined]
+    } else if ( typeof arg === "number" ) {
+      return new Collection( arg );
+    // otherwise as in new Array('a', 'b') => ['a', 'b']
+    } else {
+      args = new Array( arguments.length );
+      for ( var i = 0; i < args.length; i++ ) {
+        args[i] = arguments[i];
+      }
+      return new Collection().concat( args );
     }
-    return new Collection().concat( arr );
   };
 
   factory.ctor = Collection;
