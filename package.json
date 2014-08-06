@@ -4,7 +4,6 @@
   "version": "0.0.0",
   "dependencies": {
     "fast-poser": "0.0.1",
-    "fast.js": "0.0.0",
     "poser": "^1.1.3"
   },
   "description": "Creates an extensible Array-like class which has a lot of the Underscore collection methods.",
@@ -12,7 +11,8 @@
   "scripts": {
     "test": "mocha -R spec test/test.js"
   },
-  "author": "",
+  "author": "Nick Bottomley",
+  "repository": "https://github.com/nickb1080/super-collection/",
   "license": "MIT",
   "devDependencies": {
     "chai": "^1.9.1",

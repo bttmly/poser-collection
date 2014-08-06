@@ -44,13 +44,6 @@ module.exports = (function() {
     };
   }
 
-  function partial( fn ) {
-    var args = slice( arguments, 1 );
-    return function() {
-      return fn.apply( this, args.concat( slice( arguments ) ) );
-    };
-  }
-
   function get ( prop ) {
     return function ( obj ) {
       return obj[prop];
@@ -138,6 +131,10 @@ module.exports = (function() {
 
   cp.lastIndexOf = function( target ) {
     return fast.lastIndexOf( this, target );
+  };
+
+  cp.some = function( fn, thisContext ) {
+    return fast.some( this, fn, target );
   };
 
   // aliases for native methods.
