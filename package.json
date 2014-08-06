@@ -10,7 +10,8 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha -R spec test/test.js",
-    "browser": "browserify -s 'collection' ./ > super-collection.js && yuicompressor super-collection.js -o super-collection.min.js"
+    "browser-build": "browserify -s collection ./ > super-collection.js && yuicompressor super-collection.js -o super-collection.min.js",
+    "browser-watch": "watchify ./ -s collection -o super-collection.js"
   },
   "author": "Nick Bottomley",
   "repository": "https://github.com/nickb1080/super-collection/",
@@ -19,6 +20,7 @@
     "browserify": "^5.9.1",
     "chai": "^1.9.1",
     "uglifyjs": "^2.3.6",
-    "underscore": "^1.6.0"
+    "underscore": "^1.6.0",
+    "watchify": "^1.0.1"
   }
 }
