@@ -102,10 +102,11 @@ function flatten ( arr ) {
 }
 
 function invoke ( obj, fnOrMethod ) {
-  var args = new Array( arguments.length - 2 );
+  var args = new Array( arguments.length );
   for ( var i = 0; i < args.length; i++ ) {
-    args[i] = arguments[i + 2];
+    args[i] = arguments[i];
   }
+  args = args.slice( 2 );
   return ( isFunction( fnOrMethod ) ? fnOrMethod : obj[fnOrMethod] ).apply( obj, args );
 }
 
@@ -154,7 +155,7 @@ cp.reduceRight = function( fn, initialValue, thisArg ) {
 cp.filter = function( fn, thisArg ) {
   // return fast.filter( this, fn, thisArg );
   return this.reduce( function ( acc, item, i, arr ) {
-    if ( fn( item, i, arr ) ) {
+    if ( fn.call( thisArg, item, i, arr ) ) {
       acc.push( item );
     }
     return acc;
@@ -238,9 +239,9 @@ cp.reject = function ( testFn ) {
 };
 
 cp.invoke = function ( fnOrMethod ) {
-  var args = new Array( arguments.length - 1 );
+  var args = new Array( arguments.length );
   for ( var i = 0; i < args.length; i++ ) {
-    args[i] = arguments[i + 1];
+    args[i] = arguments[i];
   }
   this.each( function ( item ) {
     invoke.apply( null, [item].concat( args ) );
