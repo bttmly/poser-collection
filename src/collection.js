@@ -161,6 +161,8 @@ cp.reduceRight = function( fn, initialValue, thisArg ) {
   return fast.reduceRight( this, fn, initialValue, thisArg );
 };
 
+// Travis throws on functions implementing filter as fast.filter
+// for an unknown reason.
 cp.filter = function( fn, thisArg ) {
   // return fast.filter( this, fn, thisArg );
   return this.reduce( function ( acc, item, i, arr ) {
@@ -247,18 +249,12 @@ cp.reject = function ( testFn ) {
   return this.filter( not( testFn ) );
 };
 
-cp.invoke = function ( fnOrMethod ) {
-  var args = new Array( arguments.length );
-  for ( var i = 0; i < args.length; i++ ) {
-    args[i] = arguments[i];
-  }
-  this.each( function ( item ) {
-    invoke.apply( null, [item].concat( args ) );
-  });
+cp.invoke = function () {
+  this.mapInvoke.apply( this, arguments );
   return this;
 };
 
-cp.mapInvoke = function ( fnOrMethod ) {
+cp.mapInvoke = function () {
   var args = new Array( arguments.length );
   for ( var i = 0; i < args.length; i++ ) {
     args[i] = arguments[i];
@@ -289,11 +285,6 @@ cp.tap = function ( fn ) {
 cp.clone = function () {
   return fast.clone( this );
 };
-
-// todo
-// cp.cloneDeep = function () {
-
-// };
 
 cp.first = function ( num ) {
   if ( num == null ) {
@@ -357,7 +348,6 @@ cp.intersection = function () {
 };
 
 cp.difference = function () {
-  var result = new Collection();
   var args = new Array( arguments.length );
   for ( var i = 0; i < args.length; i++ ) {
     args[i] = arguments[i];
@@ -378,14 +368,14 @@ cp.unique = function () {
 cp.uniq = cp.unique;
 
 // ripped off from Underscore
-cp.sortBy = function ( itr, ctx ) {
-  itr = iterator( itr );
+cp.sortBy = function ( fn, thisArg ) {
+  fn = iterator( fn );
   return cp.pluck.call(
     this.map( function ( val, i, obj ) {
       return {
         val: val,
         i: i,
-        param: itr.call( ctx, val, i, obj )
+        param: fn.call( thisArg, val, i, obj )
       };
     }).sort( function ( left, right ) {
       var a = left.param;
@@ -398,7 +388,7 @@ cp.sortBy = function ( itr, ctx ) {
           return -1;
         }
       }
-      return left.index - right.index;
+      return left.i - right.i;
     }), "val" );
 };
 
@@ -458,8 +448,6 @@ cp.asHeadersOf = function ( rows ) {
   }
   return collectify( this, rows );
 };
-
-// mixin( cp, require( "./imperatives.js" ) );
 
 function factory () {
   var len = arguments.length;
