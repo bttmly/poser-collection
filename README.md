@@ -1,5 +1,7 @@
 # super-collection
 
+[![Build Status](https://travis-ci.org/nickb1080/super-collection.svg?branch=master)](https://travis-ci.org/nickb1080/super-collection)
+
 An extensible Array-like class which has a lot of the Underscore collection methods.
 Super collection uses and extends an `Array` constructor and prototype from a different execution context via [Poser](https://github.com/bevacqua/poser/). Here's a [short article](http://blog.ponyfoo.com/2014/06/07/how-to-avoid-objectprototype-pollution) describing how Poser works.
 
