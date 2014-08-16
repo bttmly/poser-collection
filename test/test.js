@@ -72,13 +72,21 @@ describe("factory", function () {
 // Collection.prototype.toArray
 describe( "#toArray", function() {
 
-  it( "returns a vanilla array representing the collection's data", function() {
+  it( "returns a vanilla array representing the collection's data", function () {
     var col = c([1,2,3]);
     var arr = col.toArray();
     expect( col ).to.be.instanceof( c.ctor );
     expect( arr ).to.not.be.instanceof( c.ctor );
   });
 
+});
+
+describe( "#toArrayDeep", function () {
+  it( "recursively calls .toArray() on each nested collection" , function () {
+    var arr = [1,[2,[3]]];
+    var col = c.deep( arr );
+    expect( col.toArrayDeep() ).to.deep.equal( arr );
+  });
 });
 
 
