@@ -61,6 +61,9 @@ Inverse of `filter()`. Returns a collection with all items for which `test(item)
 #### `invoke(String methodName | Function func [, arguments... ])`
 If `invoke` is called with a function, `func` is called on each item in a collection. Otherwise, each item's method named `method` is called. Parameters beyond the first are used in the invocation.
 
+### `mapInvoke(String methodName | Function func [, arguments... ])`
+Like `invoke`, but returns a collection with the values returned by each invocation.
+
 #### `without([Object item, etc.])`
 Returns a collection with all items that `===` an argument removed.
 
@@ -144,7 +147,7 @@ The `Collection` constructor. Works exactly like `Array` but doesn't `===` it.
 #### `.proto`
 `Collection.prototype`. This is where all the instance methods live. Augment at will.
 
-### Static Methods
+### Factory Static Methods
 #### `.isCollection(Object obj)`
 Returns true if `obj` is `instanceof` the factory's copy of `Collection`. If you have multiple versions of `super-collection` running, instances won't satisfy another factory's `isCollection()`.
 
