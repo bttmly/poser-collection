@@ -152,7 +152,13 @@ cp.reduceRight = function( fn, initialValue, thisArg ) {
 };
 
 cp.filter = function( fn, thisArg ) {
-  return fast.filter( this, fn, thisArg );
+  // return fast.filter( this, fn, thisArg );
+  return this.reduce( function ( acc, item, i, arr ) {
+    if ( fn( item, i, arr ) ) {
+      acc.push( item );
+    }
+    return acc;
+  }, new Collection() );
 };
 cp.select = cp.filter;
 
@@ -236,8 +242,8 @@ cp.invoke = function ( fnOrMethod ) {
   for ( var i = 0; i < args.length; i++ ) {
     args[i] = arguments[i + 1];
   }
-  this.each( function ( el ) {
-    ( isFunction( fnOrMethod ) ? fnOrMethod : el[fnOrMethod] ).apply( el, args );
+  this.each( function ( item ) {
+    invoke.apply( null, [item].concat( args ) );
   });
   return this;
 };
@@ -248,8 +254,7 @@ cp.mapInvoke = function ( fnOrMethod ) {
     args[i] = arguments[i];
   }
   return this.map( function ( item ) {
-    var _args = [item].concat( args );
-    return invoke.apply( null, _args );
+    return invoke.apply( null, [item].concat( args ) );
   });
 };
 
