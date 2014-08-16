@@ -263,7 +263,7 @@ describe( "#map", function() {
     };
     var arrMap = arr.map( mapFn );
     var colMap = col.map( mapFn );
-    expect( haveSameValues( arrMap, colMap ) ).to.be.true
+    expect( haveSameValues( arrMap, colMap ) ).to.be.true;
   });
 
   it( "has an alias called COLLECT", function() {
@@ -278,7 +278,7 @@ describe( "#filter", function() {
 
   it( "doesn't delegate to Array.prototype.filter", function() {
     var col = c();
-    expect( col.filter ).to.not.equal( Array.prototype.forEach );
+    expect( col.filter ).to.not.equal( Array.prototype.filter );
   });
 
   it("produces the same values as Array.prototype.filter", function() {
@@ -567,10 +567,10 @@ describe( "#flatten", function () {
 describe( "#mapInvoke", function () {
   it( "returns the result of calling the function on each item", function () {
     var nums = c([ 1, 2, 3 ]);
-    expect( nums.mapInvoke(function(){ return this * 2 }).toArray() ).to.deep.equal([ 2, 4, 6 ]);
+    expect( nums.mapInvoke(function(){ return this * 2; }).toArray() ).to.deep.equal([ 2, 4, 6 ]);
   });
   it( "returns the result of calling the method on each item", function () {
     var nums = c([ 1, 2, 3 ]);
     expect( nums.mapInvoke( "toString" ).toArray() ).to.deep.equal([ "1", "2", "3" ]);
   });
-})
+});
