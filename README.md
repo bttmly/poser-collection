@@ -139,6 +139,11 @@ Returns the maximum value in the list, or the maximum value among all items' `pr
 #### `extent([String property])`
 Returns a two-item collection where the first value is the result of calling `min()` and the second item is the result of calling `max()`.
 
+#### `asRowsOf([ArrayLike headers])`
+Returns a collection where the original collection and `headers` have been merged into a objects, where a given index of `headers` is the key for that index in each item in the original.
+
+### `asHeadersOf([ArrayLike rows)`
+Returns a collection where the original collection and `rows` have been merged into a objects, where a given index of the original is the key for that index in each item in `rows`.
 
 ## Factory Properties
 #### `.ctor`
@@ -159,4 +164,3 @@ Passes `arg` to factory; useful when you only want to use the factory's one-argu
 
 #### `.deep([Object arg])`
 Passes `arg` through factory recursively.
-
