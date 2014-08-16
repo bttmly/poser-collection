@@ -574,3 +574,24 @@ describe( "#mapInvoke", function () {
     expect( nums.mapInvoke( "toString" ).toArray() ).to.deep.equal([ "1", "2", "3" ]);
   });
 });
+
+describe( "#asHeadersOf", function () {
+  it( "Uses the collection as the headers for a supplied set of rows", function () {
+    var headers = c([ "name", "age", "gender"]);
+    var rows = [["Joe", 30, "male"], ["Jane", 32, "female"]];
+    var result = headers.asHeadersOf( rows );
+    expect( result.toArray() ).to.deep.equal([{ name: "Joe", age: 30, gender: "male"}, {name: "Jane", age: 32, gender: "female" }]);
+    expect( result ).to.be.instanceof( c.ctor );
+  });
+});
+
+
+describe( "#asRowsOf", function () {
+  it( "Uses the collection as the headers for a supplied set of rows", function () {
+    var headers = [ "name", "age", "gender"];
+    var rows = c([["Joe", 30, "male"], ["Jane", 32, "female"]]);
+    var result = rows.asRowsOf( headers );
+    expect( result.toArray() ).to.deep.equal([{ name: "Joe", age: 30, gender: "male"}, {name: "Jane", age: 32, gender: "female" }]);
+    expect( result ).to.be.instanceof( c.ctor );
+  });
+});
