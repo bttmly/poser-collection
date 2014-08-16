@@ -595,3 +595,25 @@ describe( "#asRowsOf", function () {
     expect( result ).to.be.instanceof( c.ctor );
   });
 });
+
+
+describe( "factory.deep", function () {
+  it( "Passes the object and any nested arrays into factory recursively", function () {
+    var arr = [1,[2,[3]]];
+    var col = c.deep( arr );
+    expect( col ).to.be.instanceof( c.ctor );
+    expect( col[1] ).to.be.instanceof( c.ctor );
+    expect( col[1][1] ).to.be.instanceof( c.ctor );
+    expect( JSON.stringify( col ) ).to.equal( JSON.stringify( arr ) );
+  });
+});
+
+describe( "factory.one", function () {
+  it( "Passes the first argument it gets into factory and returns the result", function () {
+    var cols = [[1, 2, 3], [4, 5, 6]].map( c.one );
+    expect( cols[0] ).to.be.instanceof( c.ctor );
+    expect( cols[1] ).to.be.instanceof( c.ctor );
+    expect( cols[0].toArray() ).to.deep.equal([ 1, 2, 3 ]);
+    expect( cols[1].toArray() ).to.deep.equal([ 4, 5, 6 ]);
+  });
+});

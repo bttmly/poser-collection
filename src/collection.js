@@ -483,9 +483,12 @@ function factoryOne () {
 }
 
 function factoryDeep ( arr ) {
-  return cp.reduce.call( arr, function ( acc, item ) {
-    return acc.chainPush.apply( acc, isArrayLike( item ) ? factoryDeep( item ) : [ item ] );
-  }, new Collection() );
+  return new Collection().concat( arr ).map( function ( item ) {
+    if ( isArrayLike( item ) ) {
+      item = factoryDeep( item );
+    }
+    return item;
+  });
 }
 
 factory.ctor = Collection;
