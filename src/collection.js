@@ -302,12 +302,14 @@ cp.flatten = function () {
 };
 
 cp.partition = function ( testFn ) {
-  var pass = new Collection();
-  var fail = new Collection();
+  var result = new Collection();
+  result.chainPush( new Collection() ).chainPush( new Collection() );
+  var pass = result[0];
+  var fail = result[1];
   this.each( function ( el, i, arr ) {
     ( testFn( el, i, arr ) ? pass : fail ).push( el );
   });
-  return factory([ pass, fail ]);
+  return result;
 };
 
 cp.union = function () {
