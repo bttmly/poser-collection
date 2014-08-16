@@ -50,6 +50,18 @@ function get ( prop ) {
   };
 }
 
+function callFirst ( fn ) {
+  return function ( arg ) {
+    return fn.call( this, arg );
+  };
+}
+
+function callSecond ( fn ) {
+  return function ( _, arg ) {
+    return fn.call( this, arg );
+  };
+}
+
 // function getSkip ( _, idx ) {
 //   return get( idx );
 // }
@@ -87,6 +99,14 @@ function flatten ( arr ) {
   return arr.reduce( function ( acc, item ) {
     return acc.chainPush.apply( acc, isArrayLike( item ) ? flatten( item ) : [ item ] );
   }, new Collection() );
+}
+
+function invoke ( obj, fnOrMethod ) {
+  var args = new Array( arguments.length - 2 );
+  for ( var i = 0; i < args.length; i++ ) {
+    args[i] = arguments[i + 2];
+  }
+  return ( isFunction( fnOrMethod ) ? fnOrMethod : obj[fnOrMethod] ).apply( obj, args );
 }
 
 var containsFlip = flip( contains );
@@ -215,10 +235,21 @@ cp.invoke = function ( fnOrMethod ) {
   for ( var i = 0; i < args.length; i++ ) {
     args[i] = arguments[i + 1];
   }
-  this.forEach( function ( el ) {
+  this.each( function ( el ) {
     ( isFunction( fnOrMethod ) ? fnOrMethod : el[fnOrMethod] ).apply( el, args );
   });
   return this;
+};
+
+cp.mapInvoke = function ( fnOrMethod ) {
+  var args = new Array( arguments.length );
+  for ( var i = 0; i < args.length; i++ ) {
+    args[i] = arguments[i];
+  }
+  return this.map( function ( item ) {
+    var _args = [item].concat( args );
+    return invoke.apply( null, _args );
+  });
 };
 
 cp.without = function () {
@@ -240,7 +271,7 @@ cp.tap = function ( fn ) {
 };
 
 cp.clone = function () {
-  return this.slice();
+  return fast.clone( this );
 };
 
 // todo
@@ -289,14 +320,10 @@ cp.flatten = function () {
 };
 
 cp.partition = function ( testFn ) {
-  var result = new Collection();
-  result.chainPush( new Collection() ).chainPush( new Collection() );
-  var pass = result[0];
-  var fail = result[1];
-  this.each( function ( el, i, arr ) {
-    ( testFn( el, i, arr ) ? pass : fail ).push( el );
-  });
-  return result;
+  return this.reduce( function ( acc, item, i, arr ) {
+    ( testFn( item, i, arr ) ? acc[0] : acc[1] ).push( item );
+    return acc;
+  }, factory( factory(), factory() ) );
 };
 
 cp.union = function () {
@@ -334,13 +361,12 @@ cp.difference = function () {
 };
 
 cp.unique = function () {
-  var found = new Collection();
-  this.each( function ( el ) {
-    if ( !found.contains( el ) ) {
-      found.push( el );
+  return this.reduce( function ( acc, item ) {
+    if ( !acc.contains( item ) ) {
+      return acc.chainPush( item );
     }
-  });
-  return found;
+    return acc;
+  }, new Collection() );
 };
 cp.uniq = cp.unique;
 

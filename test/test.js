@@ -560,7 +560,17 @@ describe( "#extent", function () {
 describe( "#flatten", function () {
   it( "recursively flattens a nested array", function () {
     var flat = c([ 1, [ 2, [ 3, [ 4, [ 5, [ 6 ]]]]]]).flatten();
-    console.log( flat );
     expect( flat.toArray() ).to.deep.equal([ 1, 2, 3, 4, 5, 6 ]);
   });
 });
+
+describe( "#mapInvoke", function () {
+  it( "returns the result of calling the function on each item", function () {
+    var nums = c([ 1, 2, 3 ]);
+    expect( nums.mapInvoke(function(){ return this * 2 }).toArray() ).to.deep.equal([ 2, 4, 6 ]);
+  });
+  it( "returns the result of calling the method on each item", function () {
+    var nums = c([ 1, 2, 3 ]);
+    expect( nums.mapInvoke( "toString" ).toArray() ).to.deep.equal([ "1", "2", "3" ]);
+  });
+})
