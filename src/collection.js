@@ -110,6 +110,15 @@ function invoke ( obj, fnOrMethod ) {
   return ( isFunction( fnOrMethod ) ? fnOrMethod : obj[fnOrMethod] ).apply( obj, args );
 }
 
+function collectify ( headers, rows ) {
+  return rows.map( function ( item ) {
+    return item.reduce( function ( model, val, i ) {
+      model[ headers[i] ] = val;
+      return model;
+    }, {} );
+  });
+}
+
 var containsFlip = flip( contains );
 var partial = fast.partial;
 
@@ -428,6 +437,17 @@ cp.extent = function ( prop ) {
 
 cp.toArray = function () {
   return Array.prototype.slice.call( this );
+};
+
+cp.asRowsOf = function ( headers ) {
+  return collectify( headers, this );
+};
+
+cp.asHeadersOf = function ( rows ) {
+  if ( !( rows instanceof Collection ) ) {
+    rows = factory( rows );
+  }
+  return collectify( this, rows );
 };
 
 // mixin( cp, require( "./imperatives.js" ) );
