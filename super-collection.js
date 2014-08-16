@@ -1,7 +1,155 @@
-!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var o;"undefined"!=typeof window?o=window:"undefined"!=typeof global?o=global:"undefined"!=typeof self&&(o=self),o.collection=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
-module.exports = _dereq_( './src/collection.js' );
+!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var o;"undefined"!=typeof window?o=window:"undefined"!=typeof global?o=global:"undefined"!=typeof self&&(o=self),o.collection=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+var indexOf = require('indexof');
 
-},{"./src/collection.js":5}],2:[function(_dereq_,module,exports){
+var Object_keys = function (obj) {
+    if (Object.keys) return Object.keys(obj)
+    else {
+        var res = [];
+        for (var key in obj) res.push(key)
+        return res;
+    }
+};
+
+var forEach = function (xs, fn) {
+    if (xs.forEach) return xs.forEach(fn)
+    else for (var i = 0; i < xs.length; i++) {
+        fn(xs[i], i, xs);
+    }
+};
+
+var defineProp = (function() {
+    try {
+        Object.defineProperty({}, '_', {});
+        return function(obj, name, value) {
+            Object.defineProperty(obj, name, {
+                writable: true,
+                enumerable: false,
+                configurable: true,
+                value: value
+            })
+        };
+    } catch(e) {
+        return function(obj, name, value) {
+            obj[name] = value;
+        };
+    }
+}());
+
+var globals = ['Array', 'Boolean', 'Date', 'Error', 'EvalError', 'Function',
+'Infinity', 'JSON', 'Math', 'NaN', 'Number', 'Object', 'RangeError',
+'ReferenceError', 'RegExp', 'String', 'SyntaxError', 'TypeError', 'URIError',
+'decodeURI', 'decodeURIComponent', 'encodeURI', 'encodeURIComponent', 'escape',
+'eval', 'isFinite', 'isNaN', 'parseFloat', 'parseInt', 'undefined', 'unescape'];
+
+function Context() {}
+Context.prototype = {};
+
+var Script = exports.Script = function NodeScript (code) {
+    if (!(this instanceof Script)) return new Script(code);
+    this.code = code;
+};
+
+Script.prototype.runInContext = function (context) {
+    if (!(context instanceof Context)) {
+        throw new TypeError("needs a 'context' argument.");
+    }
+    
+    var iframe = document.createElement('iframe');
+    if (!iframe.style) iframe.style = {};
+    iframe.style.display = 'none';
+    
+    document.body.appendChild(iframe);
+    
+    var win = iframe.contentWindow;
+    var wEval = win.eval, wExecScript = win.execScript;
+
+    if (!wEval && wExecScript) {
+        // win.eval() magically appears when this is called in IE:
+        wExecScript.call(win, 'null');
+        wEval = win.eval;
+    }
+    
+    forEach(Object_keys(context), function (key) {
+        win[key] = context[key];
+    });
+    forEach(globals, function (key) {
+        if (context[key]) {
+            win[key] = context[key];
+        }
+    });
+    
+    var winKeys = Object_keys(win);
+
+    var res = wEval.call(win, this.code);
+    
+    forEach(Object_keys(win), function (key) {
+        // Avoid copying circular objects like `top` and `window` by only
+        // updating existing context properties or new properties in the `win`
+        // that was only introduced after the eval.
+        if (key in context || indexOf(winKeys, key) === -1) {
+            context[key] = win[key];
+        }
+    });
+
+    forEach(globals, function (key) {
+        if (!(key in context)) {
+            defineProp(context, key, win[key]);
+        }
+    });
+    
+    document.body.removeChild(iframe);
+    
+    return res;
+};
+
+Script.prototype.runInThisContext = function () {
+    return eval(this.code); // maybe...
+};
+
+Script.prototype.runInNewContext = function (context) {
+    var ctx = Script.createContext(context);
+    var res = this.runInContext(ctx);
+
+    forEach(Object_keys(ctx), function (key) {
+        context[key] = ctx[key];
+    });
+
+    return res;
+};
+
+forEach(Object_keys(Script.prototype), function (name) {
+    exports[name] = Script[name] = function (code) {
+        var s = Script(code);
+        return s[name].apply(s, [].slice.call(arguments, 1));
+    };
+});
+
+exports.createScript = function (code) {
+    return exports.Script(code);
+};
+
+exports.createContext = Script.createContext = function (context) {
+    var copy = new Context();
+    if(typeof context === 'object') {
+        forEach(Object_keys(context), function (key) {
+            copy[key] = context[key];
+        });
+    }
+    return copy;
+};
+
+},{"indexof":2}],2:[function(require,module,exports){
+
+var indexOf = [].indexOf;
+
+module.exports = function(arr, obj){
+  if (indexOf) return arr.indexOf(obj);
+  for (var i = 0; i < arr.length; ++i) {
+    if (arr[i] === obj) return i;
+  }
+  return -1;
+};
+},{}],3:[function(require,module,exports){
 'use strict';
 
 module.exports = function (Ctor) {
@@ -788,8 +936,8 @@ module.exports = function (Ctor) {
   return Fast;
 };
 
-},{}],3:[function(_dereq_,module,exports){
-var poser = _dereq_('./src/node');
+},{}],4:[function(require,module,exports){
+var poser = require('./src/node');
 
 module.exports = poser;
 
@@ -799,10 +947,10 @@ function pose (type) {
   poser[type] = function poseComputedType () { return poser(type); };
 }
 
-},{"./src/node":4}],4:[function(_dereq_,module,exports){
+},{"./src/node":5}],5:[function(require,module,exports){
 'use strict';
 
-var vm = _dereq_('vm');
+var vm = require('vm');
 
 function poser (type) {
   var sandbox = {};
@@ -812,82 +960,79 @@ function poser (type) {
 
 module.exports = poser;
 
-},{"vm":7}],5:[function(_dereq_,module,exports){
+},{"vm":1}],6:[function(require,module,exports){
 /*! collection- v0.0.0 - MIT license */
 
 "use strict";
 module.exports = (function() {
 
-  var poser = _dereq_( "poser" );
+  var poser = require( "poser" );
   var Collection = poser.Array();
-  var fast = _dereq_( "fast-poser" )( Collection );
+  var fast = require( "fast-poser" )( Collection );
 
   var cp = Collection.prototype;
 
-  function isCollection( obj ) {
+  function isCollection ( obj ) {
     return obj instanceof Collection;
   }
 
-  function isFunction( obj ) {
+  function isFunction ( obj ) {
     return typeof obj === "function";
   }
 
-  function isArrayLike( obj ) {
+  function isArrayLike ( obj ) {
     return Object.prototype.toString.call( obj ) === "[object Array]";
   }
 
-  function keys( obj ) {
+  function keys ( obj ) {
     return factory( Object.keys( obj ) );
   }
 
-  function mixin( target, source ) {
+  function mixin ( target, source ) {
     keys( source ).each( function ( key ) {
       target[key] = source[key];
     });
     return target;
   }
 
-  function matches( against, obj ) {
+  function matches ( against, obj ) {
     return keys( against ).every( function ( key ) {
       return obj[key] === against[key];
     });
   }
 
-  function flip( fn ) {
-    return function( a, b ) {
+  function flip ( fn ) {
+    return function ( a, b ) {
       return fn.call( this, b, a );
     };
   }
 
-  function get( prop ) {
+  function get ( prop ) {
     return function ( obj ) {
       return obj[prop];
     };
   }
 
-  function getSkip( _, idx ) {
-    return get( idx );
-  }
+  // function getSkip ( _, idx ) {
+  //   return get( idx );
+  // }
 
-  function not( fn ) {
-    return function() {
+  function not ( fn ) {
+    return function () {
       return !fn.apply( this, arguments );
     };
   }
 
-  function contains( obj, value ) {
+  function contains ( obj, value ) {
     return cp.indexOf.call( obj, value ) > -1;
   }
 
-  function containsReverse( value, obj ) {
-    return cp.indexOf.call( obj, value ) > -1;
-  }
 
-  function isTruthy( value ) {
+  function isTruthy ( value ) {
     return !!value;
   }
 
-  function identity( value ) {
+  function identity ( value ) {
     return value;
   }
 
@@ -901,7 +1046,7 @@ module.exports = (function() {
     }
   }
 
-  function breakableEach( obj, callback ) {
+  function breakableEach ( obj, callback ) {
     var result;
     for ( var i = 0; i < obj.length; i++ ) {
       result = callback( obj[i], i, obj );
@@ -912,8 +1057,17 @@ module.exports = (function() {
     return null;
   }
 
+  function flatten ( arr ) {
+    return arr.reduce( function ( acc, item ) {
+      acc.push.apply( acc, isArrayLike( item ) ? flatten( item ) : [ item ] );
+      return acc;
+    }, new Collection() );
+  }
+
+  var containsFlip = flip( contains );
+
   // helpers
-  var slice = Function.prototype.call.bind( cp.slice );
+  // var slice = Function.prototype.call.bind( cp.slice );
 
   // create chainable versions of these native methods
   ["push", "pop", "shift", "unshift"].forEach( function( method ) {
@@ -971,22 +1125,22 @@ module.exports = (function() {
   cp.collect = cp.map;
   cp.select = cp.filter;
 
-  cp.forEachRight = function( fn ) {
+  cp.forEachRight = function ( fn ) {
     this.slice().reverse().each( fn );
   };
   cp.eachRight = cp.forEachRight;
 
-  cp.where = function( obj ) {
+  cp.where = function ( obj ) {
     return this.filter( fast.partial( matches, obj ) );
   };
 
-  cp.whereNot = function( obj ) {
+  cp.whereNot = function ( obj ) {
     return this.filter( not( fast.partial( matches, obj ) ) );
   };
 
-  cp.find = function( testFn ) {
+  cp.find = function ( testFn ) {
     var result = null;
-    breakableEach( this, function( el, i, arr ) {
+    breakableEach( this, function ( el, i, arr ) {
       if ( testFn( el, i, arr ) ) {
         result = el;
         return false;
@@ -995,52 +1149,52 @@ module.exports = (function() {
     return result;
   };
 
-  cp.findNot = function( testFn ) {
+  cp.findNot = function ( testFn ) {
     return this.find( not( testFn ) );
   };
 
-  cp.findWhere = function( obj ) {
+  cp.findWhere = function ( obj ) {
     return this.find( fast.partial( matches, obj ) );
   };
 
-  cp.findWhereNot = function( obj ) {
+  cp.findWhereNot = function ( obj ) {
     return this.find( not( fast.partial( matches, obj ) ) );
   };
 
-  cp.pluck = function( prop ) {
+  cp.pluck = function ( prop ) {
     return this.map( get( prop ) );
   };
 
-  cp.pick = function() {
+  cp.pick = function () {
     var props = new Array( arguments.length );
     for ( var i = 0; i < args.length; i++ ) {
       args[i] = arguments[i];
     }
-    return this.map( function( el ) {
+    return this.map( function ( el ) {
       var obj = {};
-      props.each( function( prop ) {
+      props.each( function ( prop ) {
         obj[prop] = el[prop];
       });
       return obj;
     });
   };
 
-  cp.reject = function( testFn ) {
+  cp.reject = function ( testFn ) {
     return this.filter( not( testFn ) );
   };
 
-  cp.invoke = function( fnOrMethod ) {
+  cp.invoke = function ( fnOrMethod ) {
     var args = new Array( arguments.length - 1 );
     for ( var i = 0; i < args.length; i++ ) {
       args[i] = arguments[i + 1];
     }
-    this.forEach( function( el ) {
+    this.forEach( function ( el ) {
       ( isFunction( fnOrMethod ) ? fnOrMethod : el[fnOrMethod] ).apply( el, args );
     });
     return this;
   };
 
-  cp.without = function() {
+  cp.without = function () {
     var args = new Array( arguments.length );
     for ( var i = 0; i < args.length; i++ ) {
       args[i] = arguments[i];
@@ -1049,25 +1203,25 @@ module.exports = (function() {
   };
   cp.remove = cp.without;
 
-  cp.contains = function( obj ) {
+  cp.contains = function ( obj ) {
     return contains( this, obj );
   };
 
-  cp.tap = function( fn ) {
+  cp.tap = function ( fn ) {
     fn( this );
     return this;
   };
 
-  cp.clone = function() {
+  cp.clone = function () {
     return this.slice();
   };
 
   // todo
-  // cp.cloneDeep = function() {
+  // cp.cloneDeep = function () {
 
   // };
 
-  cp.first = function( num ) {
+  cp.first = function ( num ) {
     if ( num == null ) {
       return this[0];
     }
@@ -1076,21 +1230,21 @@ module.exports = (function() {
   cp.head = cp.first;
   cp.take = cp.first;
 
-  cp.initial = function( num ) {
+  cp.initial = function ( num ) {
     if ( num == null ) {
       num = 1;
     }
     return this.slice( 0, this.length - num );
   };
 
-  cp.last = function( num ) {
+  cp.last = function ( num ) {
     if ( num == null ) {
       return this[this.length - 1];
     }
     return this.slice( 0, -1 * num );
   };
 
-  cp.rest = function( num ) {
+  cp.rest = function ( num ) {
     if ( num == null ) {
       num = 1;
     }
@@ -1099,36 +1253,35 @@ module.exports = (function() {
   cp.tail = cp.rest;
   cp.drop = cp.rest;
 
-  cp.compact = function() {
+  cp.compact = function () {
     return this.filter( isTruthy );
   };
 
-  // TODO
-  // cp.flatten = function() {
+  cp.flatten = function () {
+    return flatten.call( null, this );
+  };
 
-  // };
-
-  cp.partition = function( testFn ) {
+  cp.partition = function ( testFn ) {
     var pass = new Collection();
     var fail = new Collection();
-    this.each( function( el, i, arr ) {
+    this.each( function ( el, i, arr ) {
       ( testFn( el, i, arr ) ? pass : fail ).push( el );
     });
     return factory([ pass, fail ]);
   };
 
-  cp.union = function() {
+  cp.union = function () {
     return cp.concat.apply( this, arguments ).unique();
   };
 
-  cp.intersection = function() {
+  cp.intersection = function () {
     var result = new Collection();
     var args = new Array( arguments.length );
     for ( var i = 0; i < args.length; i++ ) {
       args[i] = arguments[i];
     }
-    this.each( function( el ) {
-      var has = args.every( fast.partial( containsReverse, el ) );
+    this.each( function ( el ) {
+      var has = args.every( fast.partial( containsFlip, el ) );
       if ( has ) {
         result.push( el );
       }
@@ -1136,14 +1289,14 @@ module.exports = (function() {
     return result;
   };
 
-  cp.difference = function() {
+  cp.difference = function () {
     var result = new Collection();
     var args = new Array( arguments.length );
     for ( var i = 0; i < args.length; i++ ) {
       args[i] = arguments[i];
     }
-    this.each( function( el ) {
-      var notHas = args.every( not( fast.partial( containsReverse, el ) ) );
+    this.each( function ( el ) {
+      var notHas = args.every( not( fast.partial( containsFlip, el ) ) );
       if ( notHas ) {
         result.push( el );
       }
@@ -1151,9 +1304,9 @@ module.exports = (function() {
     return result;
   };
 
-  cp.unique = function() {
+  cp.unique = function () {
     var found = new Collection();
-    this.each( function( el ) {
+    this.each( function ( el ) {
       if ( !found.contains( el ) ) {
         found.push( el );
       }
@@ -1163,16 +1316,16 @@ module.exports = (function() {
   cp.uniq = cp.unique;
 
   // ripped off from Underscore
-  cp.sortBy = function( itr, ctx ) {
+  cp.sortBy = function ( itr, ctx ) {
     itr = iterator( itr );
     return cp.pluck.call(
-      this.map( function( val, i, obj ) {
+      this.map( function ( val, i, obj ) {
         return {
           val: val,
           i: i,
           param: itr.call( ctx, val, i, obj )
         };
-      }).sort( function( left, right ) {
+      }).sort( function ( left, right ) {
         var a = left.param;
         var b = right.param;
         if ( a !== b ) {
@@ -1184,11 +1337,10 @@ module.exports = (function() {
           }
         }
         return left.index - right.index;
-      }),
-    "val" );
+      }), "val" );
   };
 
-  cp.zip = function() {
+  cp.zip = function () {
     var args = new Collection( arguments.length );
     for ( var i = 0; i < args.length; i++ ) {
       args[i] = arguments[i];
@@ -1203,29 +1355,29 @@ module.exports = (function() {
       });
   };
 
-  cp.min = function( prop ) {
+  cp.min = function ( prop ) {
     if ( prop ) {
       return cp.min.call( this.pluck( prop ) );
     }
     return Math.min.apply( Math, this );
   };
 
-  cp.max = function( prop ) {
+  cp.max = function ( prop ) {
     if ( prop ) {
       return cp.max.call( this.pluck( prop ) );
     }
     return Math.max.apply( Math, this );
   };
 
-  cp.extent = function( prop ) {
+  cp.extent = function ( prop ) {
     return [ this.min( prop ), this.max( prop ) ];
   };
 
-  cp.toArray = function() {
+  cp.toArray = function () {
     return Array.prototype.slice.call( this );
   };
 
-  mixin( cp, _dereq_( "./imperatives.js" ) );
+  mixin( cp, require( "./imperatives.js" ) );
 
   function factory () {
     var len = arguments.length;
@@ -1267,7 +1419,7 @@ module.exports = (function() {
 
 })();
 
-},{"./imperatives.js":6,"fast-poser":2,"poser":3}],6:[function(_dereq_,module,exports){
+},{"./imperatives.js":7,"fast-poser":3,"poser":4}],7:[function(require,module,exports){
 "use strict";
 
 function matches( against, obj ) {
@@ -1334,157 +1486,8 @@ var methods = {
 };
 
 module.exports = methods;
-},{}],7:[function(_dereq_,module,exports){
-var indexOf = _dereq_('indexof');
+},{}],8:[function(require,module,exports){
+module.exports = require( './src/collection.js' );
 
-var Object_keys = function (obj) {
-    if (Object.keys) return Object.keys(obj)
-    else {
-        var res = [];
-        for (var key in obj) res.push(key)
-        return res;
-    }
-};
-
-var forEach = function (xs, fn) {
-    if (xs.forEach) return xs.forEach(fn)
-    else for (var i = 0; i < xs.length; i++) {
-        fn(xs[i], i, xs);
-    }
-};
-
-var defineProp = (function() {
-    try {
-        Object.defineProperty({}, '_', {});
-        return function(obj, name, value) {
-            Object.defineProperty(obj, name, {
-                writable: true,
-                enumerable: false,
-                configurable: true,
-                value: value
-            })
-        };
-    } catch(e) {
-        return function(obj, name, value) {
-            obj[name] = value;
-        };
-    }
-}());
-
-var globals = ['Array', 'Boolean', 'Date', 'Error', 'EvalError', 'Function',
-'Infinity', 'JSON', 'Math', 'NaN', 'Number', 'Object', 'RangeError',
-'ReferenceError', 'RegExp', 'String', 'SyntaxError', 'TypeError', 'URIError',
-'decodeURI', 'decodeURIComponent', 'encodeURI', 'encodeURIComponent', 'escape',
-'eval', 'isFinite', 'isNaN', 'parseFloat', 'parseInt', 'undefined', 'unescape'];
-
-function Context() {}
-Context.prototype = {};
-
-var Script = exports.Script = function NodeScript (code) {
-    if (!(this instanceof Script)) return new Script(code);
-    this.code = code;
-};
-
-Script.prototype.runInContext = function (context) {
-    if (!(context instanceof Context)) {
-        throw new TypeError("needs a 'context' argument.");
-    }
-    
-    var iframe = document.createElement('iframe');
-    if (!iframe.style) iframe.style = {};
-    iframe.style.display = 'none';
-    
-    document.body.appendChild(iframe);
-    
-    var win = iframe.contentWindow;
-    var wEval = win.eval, wExecScript = win.execScript;
-
-    if (!wEval && wExecScript) {
-        // win.eval() magically appears when this is called in IE:
-        wExecScript.call(win, 'null');
-        wEval = win.eval;
-    }
-    
-    forEach(Object_keys(context), function (key) {
-        win[key] = context[key];
-    });
-    forEach(globals, function (key) {
-        if (context[key]) {
-            win[key] = context[key];
-        }
-    });
-    
-    var winKeys = Object_keys(win);
-
-    var res = wEval.call(win, this.code);
-    
-    forEach(Object_keys(win), function (key) {
-        // Avoid copying circular objects like `top` and `window` by only
-        // updating existing context properties or new properties in the `win`
-        // that was only introduced after the eval.
-        if (key in context || indexOf(winKeys, key) === -1) {
-            context[key] = win[key];
-        }
-    });
-
-    forEach(globals, function (key) {
-        if (!(key in context)) {
-            defineProp(context, key, win[key]);
-        }
-    });
-    
-    document.body.removeChild(iframe);
-    
-    return res;
-};
-
-Script.prototype.runInThisContext = function () {
-    return eval(this.code); // maybe...
-};
-
-Script.prototype.runInNewContext = function (context) {
-    var ctx = Script.createContext(context);
-    var res = this.runInContext(ctx);
-
-    forEach(Object_keys(ctx), function (key) {
-        context[key] = ctx[key];
-    });
-
-    return res;
-};
-
-forEach(Object_keys(Script.prototype), function (name) {
-    exports[name] = Script[name] = function (code) {
-        var s = Script(code);
-        return s[name].apply(s, [].slice.call(arguments, 1));
-    };
-});
-
-exports.createScript = function (code) {
-    return exports.Script(code);
-};
-
-exports.createContext = Script.createContext = function (context) {
-    var copy = new Context();
-    if(typeof context === 'object') {
-        forEach(Object_keys(context), function (key) {
-            copy[key] = context[key];
-        });
-    }
-    return copy;
-};
-
-},{"indexof":8}],8:[function(_dereq_,module,exports){
-
-var indexOf = [].indexOf;
-
-module.exports = function(arr, obj){
-  if (indexOf) return arr.indexOf(obj);
-  for (var i = 0; i < arr.length; ++i) {
-    if (arr[i] === obj) return i;
-  }
-  return -1;
-};
-},{}]},{},[1])
-(1)
+},{"./src/collection.js":6}]},{},[8])(8)
 });

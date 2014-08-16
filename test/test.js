@@ -82,13 +82,7 @@ describe( "#toArray", function() {
 });
 
 
-// Collection.prototype.push === Array.prototype.push
 describe( "#push", function() {
-
-  // it("delegates to Array.prototype", function() {
-  //   var col = c();
-  //   expect( col.push ).to.equal( Array.prototype.push );
-  // });
 
   it("does not change a collection into an array", function() {
     var col = c();
@@ -102,11 +96,6 @@ describe( "#push", function() {
 // Collection.prototype.pop === Array.prototype.pop
 describe( "#pop", function() {
 
-  // it("delegates to Array.prototype", function() {
-  //   var col = c();
-  //   expect( col.pop ).to.equal( Array.prototype.pop );
-  // });
-
   it("does not change a collection into an array", function() {
     var col = c(["item"]);
     col.pop();
@@ -118,11 +107,6 @@ describe( "#pop", function() {
 
 describe( "#shift", function() {
 
-  // it("delegates to Array.prototype", function() {
-  //   var col = c();
-  //   expect( col.shift ).to.equal( Array.prototype.shift )
-  // });
-
   it("does not change a collection into an array", function() {
     var col = c();
     col.shift("item");
@@ -132,13 +116,7 @@ describe( "#shift", function() {
 });
 
 
-// Collection.prototype.unshift === Array.prototype.unshift
 describe( "#unshift", function() {
-
-  // it("delegates to Array.prototype", function() {
-  //   var col = c();
-  //   expect( col.unshift ).to.equal( Array.prototype.unshift );
-  // });
 
   it("does not change a collection into an array", function() {
     var col = c(["item"]);
@@ -149,13 +127,7 @@ describe( "#unshift", function() {
 });
 
 
-// Collection.prototype.forEach === Array.prototype.forEach
 describe( "#forEach", function() {
-
-  // it( "delegates to Array.prototype.forEach", function() {
-  //   var col = c();
-  //   expect( col.forEach ).to.equal( Array.prototype.forEach );
-  // });
 
   it("does not change a collection into an array", function() {
     var col = c( range(0, 10) );
@@ -582,5 +554,13 @@ describe( "#extent", function () {
   });
   it( "returns the max value of a property", function () {
     expect( c( userData() ).extent( "age" ) ).to.deep.equal([ 20, 40 ]);
+  });
+});
+
+describe( "#flatten", function () {
+  it( "recursively flattens a nested array", function () {
+    var flat = c([ 1, [ 2, [ 3, [ 4, [ 5, [ 6 ]]]]]]).flatten();
+    console.log( flat );
+    expect( flat.toArray() ).to.deep.equal([ 1, 2, 3, 4, 5, 6 ]);
   });
 });
