@@ -126,6 +126,7 @@ var partial = fast.partial;
 [ "forEach", "map", "reduce", "filter", "some", "every", "indexOf", "lastIndexOf" ].forEach( function( method ) {
   var name = "native" + method.charAt( 0 ).toUpperCase()  + method.slice( 1 );
   var original = Collection.prototype[method];
+  delete Collection.prototype[method];
   Collection.prototype[name] = function() {
     return original.apply( this, arguments );
   };
@@ -331,18 +332,13 @@ cp.union = function () {
 };
 
 cp.intersection = function () {
-  var result = new Collection();
   var args = new Array( arguments.length );
   for ( var i = 0; i < args.length; i++ ) {
     args[i] = arguments[i];
   }
-  this.each( function ( el ) {
-    var has = args.every( partial( containsFlip, el ) );
-    if ( has ) {
-      result.push( el );
-    }
+  return this.filter( function ( el ) {
+    return args.every( partial( containsFlip, el ) );
   });
-  return result;
 };
 
 cp.difference = function () {
@@ -351,13 +347,9 @@ cp.difference = function () {
   for ( var i = 0; i < args.length; i++ ) {
     args[i] = arguments[i];
   }
-  this.each( function ( el ) {
-    var notHas = args.every( not( partial( containsFlip, el ) ) );
-    if ( notHas ) {
-      result.push( el );
-    }
+  return this.filter( function ( el ) {
+    return args.every( not( partial( containsFlip, el ) ) );
   });
-  return result;
 };
 
 cp.unique = function () {
