@@ -439,6 +439,15 @@ cp.toArray = function () {
   return Array.prototype.slice.call( this );
 };
 
+cp.toArrayDeep = function () {
+  return this.toArray().map( function ( item ) {
+    if ( isCollection( item ) ) {
+      item = item.toArrayDeep();
+    }
+    return item;
+  });
+};
+
 cp.asRowsOf = function ( headers ) {
   return collectify( headers, this );
 };
