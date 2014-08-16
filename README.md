@@ -139,19 +139,19 @@ Returns a two-item collection where the first value is the result of calling `mi
 #### `.ctor`
 The `Collection` constructor. Works exactly like `Array` but doesn't `===` it.
 
-### `.proto`
+#### `.proto`
 `Collection.prototype`. This is where all the instance methods live. Augment at will.
 
 ### Static Methods
-### `.isCollection(Object obj)`
+#### `.isCollection(Object obj)`
 Returns true if `obj` is `instanceof` the factory's copy of `Collection`. If you have multiple versions of `super-collection` running, instances won't satisfy another factory's `isCollection()`.
 
-### `.isArrayLike(Object obj)`
+#### `.isArrayLike(Object obj)`
 Returns true if `obj` is "array-like", i.e. returns true for `Array` instances and `Collection` instances. Uses `Object.prototype.toString`.
 
-### `.one([Object arg])`
+#### `.one([Object arg])`
 Passes `arg` to factory; useful when you only want to use the factory's one-argument signature, for example in an iterator's callback.
 
-### `.deep([Object arg])`
+#### `.deep([Object arg])`
 Passes `arg` through factory recursively.
 
