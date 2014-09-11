@@ -9,8 +9,22 @@ super-collection (working on a better name...) uses and extends an `Array` const
 
 ## Instance Methods
 
+- ALL `Array.prototype` methods are available, subject to the caveat directly below.
+
 **Important!**
-super-collection uses the [fast.js]() equivalents for the ES5 array "extras". This means that, for certain obscure edge cases, methods like `forEach`, `map`, `filter`, `reduce`, `every`, and `some` might not work as expected. You can access the native versions of these methods by prefixing the method name with `native` (i.e. `nativeForEach`).
+super-collection uses the [fast.js]() equivalents for the ES5 array "extras". This means that, for cases, methods like `forEach`, `map`, `filter`, `reduce`, `every`, and `some` might not work as expected. You can access the native versions of these methods by prefixing the method name with `native` (i.e. `nativeForEach`). The biggest difference is that these iteration methods _do_ iterate over "holes" (undefined items) in your collections. Here's a basic example:
+
+```js
+var collection = require("super-collection");
+
+var emptyCollection = collection(3); // [ , , ]
+var emptyArray = new Array(3); // [ , , ]
+
+emptyCollection.map(function (_, i) { return i }); // [0, 1, 2]
+emptyArray.map(function (_, i) { return i }); // [ , , ]
+```
+
+... But now, actually, the methods:
 
 #### `chainPush()`
 Works like `Array.prototype.push`, except it returns the collection so you can chain subsequent method calls.
