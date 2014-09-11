@@ -80,7 +80,7 @@ function flatten ( arr ) {
 }
 
 function invoke ( obj, fnOrMethod ) {
-  var args = new Array( arguments.length );
+  var args = new Collection( arguments.length );
   for ( var i = 0; i < args.length; i++ ) {
     args[i] = arguments[i];
   }
@@ -104,18 +104,18 @@ var partial = fast.partial;
 [ "push", "pop", "shift", "unshift" ].forEach( function( method ) {
   // new methods will be named chainPush, chainPop, chainShift, chainUnshift
   var name = "chain" + method.charAt( 0 ).toUpperCase() + method.slice( 1 );
-  var original = Collection.prototype[method];
-  Collection.prototype[name] = function() {
+  var original = cp[method];
+  cp[name] = function() {
     original.apply( this, arguments );
     return this;
   };
 });
 
-[ "forEach", "map", "reduce", "filter", "some", "every", "indexOf", "lastIndexOf" ].forEach( function( method ) {
+[ "forEach", "map", "reduce", "reduceRight", "filter", "some", "every", "indexOf", "lastIndexOf" ].forEach( function( method ) {
   var name = "native" + method.charAt( 0 ).toUpperCase()  + method.slice( 1 );
-  var original = Collection.prototype[method];
-  delete Collection.prototype[method];
-  Collection.prototype[name] = function() {
+  var original = cp[method];
+  delete cp[method];
+  cp[name] = function() {
     return original.apply( this, arguments );
   };
 });
@@ -139,6 +139,8 @@ cp.reduceRight = function( fn, initialValue, thisArg ) {
   return fast.reduceRight( this, fn, initialValue, thisArg );
 };
 
+// Travis throws on functions implementing filter as fast.filter
+// for an unknown reason.
 cp.filter = function( fn, thisArg ) {
   // return fast.filter( this, fn, thisArg );
   return this.reduce( function ( acc, item, i, arr ) {
@@ -208,9 +210,9 @@ cp.pluck = function ( prop ) {
 };
 
 cp.pick = function () {
-  var props = new Array( arguments.length );
-  for ( var i = 0; i < args.length; i++ ) {
-    args[i] = arguments[i];
+  var props = new Collection( arguments.length );
+  for ( var i = 0; i < props.length; i++ ) {
+    props[i] = arguments[i];
   }
   return this.map( function ( el ) {
     var obj = {};
@@ -225,19 +227,13 @@ cp.reject = function ( testFn ) {
   return this.filter( not( testFn ) );
 };
 
-cp.invoke = function ( fnOrMethod ) {
-  var args = new Array( arguments.length );
-  for ( var i = 0; i < args.length; i++ ) {
-    args[i] = arguments[i];
-  }
-  this.each( function ( item ) {
-    invoke.apply( null, [item].concat( args ) );
-  });
+cp.invoke = function () {
+  this.mapInvoke.apply( this, arguments );
   return this;
 };
 
-cp.mapInvoke = function ( fnOrMethod ) {
-  var args = new Array( arguments.length );
+cp.mapInvoke = function () {
+  var args = new Collection( arguments.length );
   for ( var i = 0; i < args.length; i++ ) {
     args[i] = arguments[i];
   }
@@ -247,7 +243,7 @@ cp.mapInvoke = function ( fnOrMethod ) {
 };
 
 cp.without = function () {
-  var args = new Array( arguments.length );
+  var args = new Collection( arguments.length );
   for ( var i = 0; i < args.length; i++ ) {
     args[i] = arguments[i];
   }
@@ -267,11 +263,6 @@ cp.tap = function ( fn ) {
 cp.clone = function () {
   return fast.clone( this );
 };
-
-// todo
-// cp.cloneDeep = function () {
-
-// };
 
 cp.first = function ( num ) {
   if ( num == null ) {
@@ -325,7 +316,7 @@ cp.union = function () {
 };
 
 cp.intersection = function () {
-  var args = new Array( arguments.length );
+  var args = new Collection( arguments.length );
   for ( var i = 0; i < args.length; i++ ) {
     args[i] = arguments[i];
   }
@@ -335,8 +326,7 @@ cp.intersection = function () {
 };
 
 cp.difference = function () {
-  var result = new Collection();
-  var args = new Array( arguments.length );
+  var args = new Collection( arguments.length );
   for ( var i = 0; i < args.length; i++ ) {
     args[i] = arguments[i];
   }
@@ -356,14 +346,14 @@ cp.unique = function () {
 cp.uniq = cp.unique;
 
 // ripped off from Underscore
-cp.sortBy = function ( itr, ctx ) {
-  itr = iterator( itr );
+cp.sortBy = function ( fn, thisArg ) {
+  fn = iterator( fn );
   return cp.pluck.call(
     this.map( function ( val, i, obj ) {
       return {
         val: val,
         i: i,
-        param: itr.call( ctx, val, i, obj )
+        param: fn.call( thisArg, val, i, obj )
       };
     }).sort( function ( left, right ) {
       var a = left.param;
@@ -376,7 +366,7 @@ cp.sortBy = function ( itr, ctx ) {
           return -1;
         }
       }
-      return left.index - right.index;
+      return left.i - right.i;
     }), "val" );
 };
 
@@ -437,21 +427,16 @@ cp.asHeadersOf = function ( rows ) {
   return collectify( this, rows );
 };
 
-// mixin( cp, require( "./imperatives.js" ) );
-
 function factory () {
   var len = arguments.length;
   var args;
-  var ret;
 
   if ( len === 0 ) {
     return new Collection();
   }
 
   if ( len === 1 && isArrayLike( arguments[0] ) ) {
-    ret = new Collection();
-    cp.push.apply( ret, arguments[0] );
-    return ret;
+    return new Collection().concat( arguments[0] );
   }
 
   if ( len === 1 && typeof arguments[0] === "number") {
@@ -471,10 +456,7 @@ function factoryOne () {
 
 function factoryDeep ( arr ) {
   return new Collection().concat( arr ).map( function ( item ) {
-    if ( isArrayLike( item ) ) {
-      item = factoryDeep( item );
-    }
-    return item;
+    return isArrayLike( item ) ? factoryDeep( item ) : item;
   });
 }
 
