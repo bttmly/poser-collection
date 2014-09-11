@@ -156,8 +156,9 @@ The `Collection` constructor. Works exactly like `Array` but doesn't `===` it.
 #### `.isCollection(Object obj)`
 Returns true if `obj` is `instanceof` the factory's copy of `Collection`. If you have multiple versions of `super-collection` running, instances won't satisfy another factory's `isCollection()`.
 
-#### `.isArrayLike(Object obj)`
+#### `.isArrayish(Object obj)`
 Returns true if `obj` is "array-like", i.e. returns true for `Array` instances and `Collection` instances. Uses `Object.prototype.toString`.
+_Note_: Previously was named `.isArrayLike()`, however that term is generally taken to mean an object that is _similar enough_ to an array to be used with, e.g. `[].forEach.call()`. This category includes `HTMLCollection` and `jQuery` objects. `isArrayish()` is much more strict.
 
 #### `.one([Object arg])`
 Passes `arg` to factory; useful when you only want to use the factory's one-argument signature, for example in an iterator's callback.
