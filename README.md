@@ -56,10 +56,10 @@ Maps a collection into a new collection of items containing only `property`.
 Maps a collection into a new collection of items containing each passed in `property`.
 
 #### `reject(Function test)`
-Inverse of `filter()`. Returns a collection with all items for which `test(item)` returns a truthy value removed.
+Inverse of `filter()`. Returns a collection with all items for which `test(item)` returns a falsy value.
 
 #### `invoke(String methodName | Function func [, arguments... ])`
-If `invoke` is called with a function, `func` is called on each item in a collection. Otherwise, each item's method named `method` is called. Parameters beyond the first are used in the invocation.
+If `invoke` is called with a function, `func` is called on each item in a collection. Otherwise, each item's method named `method` is called. Parameters beyond the first are used in the invocation. Returns the collection.
 
 #### `mapInvoke(String methodName | Function func [, arguments... ])`
 Like `invoke`, but returns a collection with the values returned by each invocation.
