@@ -486,8 +486,8 @@ describe( "#intersection", function() {
     var a = [1, 2, 3, 4];
     var b = [3, 4, 5, 6];
     var d = [1, 2, 7, 8];
-    var cResult = c( a ).intersection( b, c ).toArray();
-    var uResult = _.intersection( a, b, c );
+    var cResult = c( a ).intersection( b, d ).toArray();
+    var uResult = _.intersection( a, b, d );
     expect( cResult ).to.deep.equal( uResult );
   });
 });
@@ -497,8 +497,8 @@ describe( "#difference", function() {
     var a = [1, 2, 3, 4];
     var b = [3, 4, 5, 6];
     var d = [1, 7, 8, 9];
-    var cResult = c( a ).difference( b, c ).toArray();
-    var uResult = _.difference( a, b, c );
+    var cResult = c( a ).difference( b, d ).toArray();
+    var uResult = _.difference( a, b, d );
     expect( cResult ).to.deep.equal( uResult );
   });
 });
@@ -523,9 +523,8 @@ describe( "#union", function() {
     var a = [1, 2, 3, 4];
     var b = [3, 4, 5, 6];
     var d = [1, 2, 7, 8];
-    var cResult = c( a ).union( b, c ).toArray();
-    var uResult = _.union( a, b, c );
-    console.log( uResult );
+    var cResult = c( a ).union( b, d ).toArray();
+    var uResult = _.union( a, b, d );
     expect( cResult ).to.deep.equal( uResult );
   });
 });
