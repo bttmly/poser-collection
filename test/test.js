@@ -481,18 +481,6 @@ describe( "#partition", function() {
   });
 });
 
-describe( "#union", function() {
-  it( "works like _.union", function() {
-    var a = [1, 2, 3, 4];
-    var b = [3, 4, 5, 6];
-    var d = [1, 2, 7, 8];
-    var cResult = c( a ).union( b, c ).toArray();
-    var uResult = _.union( a, b, c );
-    console.log( uResult );
-    expect( cResult ).to.deep.equal( uResult );
-  });
-});
-
 describe( "#intersection", function() {
   it( "works like _.intersection", function() {
     var a = [1, 2, 3, 4];
@@ -527,6 +515,18 @@ describe( "#zip", function () {
     var expected = [["moe", 30, true], ["larry", 40, undefined], ["curly", undefined, undefined]];
     var cZip = cArr.zip( [30, 40], [true] );
     expect( JSON.stringify( cZip ) ).to.equal( JSON.stringify( expected ) );
+  });
+});
+
+describe( "#union", function() {
+  it( "works like _.union", function() {
+    var a = [1, 2, 3, 4];
+    var b = [3, 4, 5, 6];
+    var d = [1, 2, 7, 8];
+    var cResult = c( a ).union( b, c ).toArray();
+    var uResult = _.union( a, b, c );
+    console.log( uResult );
+    expect( cResult ).to.deep.equal( uResult );
   });
 });
 
