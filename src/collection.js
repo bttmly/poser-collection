@@ -25,13 +25,6 @@ function keys ( obj ) {
   return factory( Object.keys( obj ) );
 }
 
-function mixin ( target, source ) {
-  keys( source ).each( function ( key ) {
-    target[key] = source[key];
-  });
-  return target;
-}
-
 function matches ( against, obj ) {
   return keys( against ).every( function ( key ) {
     return obj[key] === against[key];
@@ -49,22 +42,6 @@ function get ( prop ) {
     return obj[prop];
   };
 }
-
-function callFirst ( fn ) {
-  return function ( arg ) {
-    return fn.call( this, arg );
-  };
-}
-
-function callSecond ( fn ) {
-  return function ( _, arg ) {
-    return fn.call( this, arg );
-  };
-}
-
-// function getSkip ( _, idx ) {
-//   return get( idx );
-// }
 
 function not ( fn ) {
   return function () {
