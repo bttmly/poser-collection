@@ -27,24 +27,59 @@ emptyArray.map(function (_, i) { return i }); // [ , , ]
 ... But now, actually, the methods:
 
 #### `.forEach()`
+The [fast.js](https://github.com/codemix/fast.js) implementation of `forEach`. The major difference from the native method is that it iterates over indexes for which a value isn't present.
+
 #### `.map()`
+The [fast.js](https://github.com/codemix/fast.js) implementation of `map`. The major difference from the native method is that it iterates over indexes for which a value isn't present.
+
 #### `.filter()`
+The [fast.js](https://github.com/codemix/fast.js) implementation of `filter`. The major difference from the native method is that it iterates over indexes for which a value isn't present.
+
 #### `.reduce()`
+The [fast.js](https://github.com/codemix/fast.js) implementation of `reduce`. The major difference from the native method is that it iterates over indexes for which a value isn't present.
+
 #### `.reduceRight()`
+The [fast.js](https://github.com/codemix/fast.js) implementation of `reduceRight`. The major difference from the native method is that it iterates over indexes for which a value isn't present.
+
 #### `.every()`
+The [fast.js](https://github.com/codemix/fast.js) implementation of `every`. The major difference from the native method is that it iterates over indexes for which a value isn't present.
+
 #### `.some()`
+The [fast.js](https://github.com/codemix/fast.js) implementation of `some`. The major difference from the native method is that it iterates over indexes for which a value isn't present.
+
 #### `.indexOf()`
+The [fast.js](https://github.com/codemix/fast.js) implementation of `indexOf`. The major difference from the native method is that it iterates over indexes for which a value isn't present.
+
 #### `.lastIndexOf()`
+The [fast.js](https://github.com/codemix/fast.js) implementation of `lastIndexOf`. The major difference from the native method is that it iterates over indexes for which a value isn't present.
+
 
 #### `.nativeForEach()`
+The native `Array` implementation of `forEach`.
+
 #### `.nativeMap()`
+The native `Array` implementation of `map`.
+
 #### `.nativeFilter()`
+The native `Array` implementation of `.filter`.
+
 #### `.nativeReduce()`
+The native `Array` implementation of `reduce`.
+
 #### `.nativeReduceRight()`
+The native `Array` implementation of `reduceRight`.
+
 #### `.nativeEvery()`
+The native `Array` implementation of `every`.
+
 #### `.nativeSome()`
+The native `Array` implementation of `some`.
+
 #### `.nativeIndexOf()`
+The native `Array` implementation of `indexOf`.
+
 #### `.nativeLastIndexOf()`
+The native `Array` implementation of `lastIndexOf`.
 
 #### `chainPush()`
 Works like `Array.prototype.push`, except it returns the collection so you can chain subsequent method calls.
