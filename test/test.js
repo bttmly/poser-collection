@@ -625,3 +625,6 @@ describe( "factory.one", function () {
     expect( cols[1].toArray() ).to.deep.equal([ 4, 5, 6 ]);
   });
 });
+
+
+require( "./fast-methods.js" );

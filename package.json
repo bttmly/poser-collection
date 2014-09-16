@@ -20,6 +20,7 @@
   "devDependencies": {
     "browserify": "^5.9.1",
     "chai": "^1.9.1",
+    "sinon": "^1.10.3",
     "uglifyjs": "^2.3.6",
     "underscore": "^1.6.0",
     "watchify": "^1.0.1"

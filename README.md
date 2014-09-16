@@ -10,6 +10,26 @@ Super collection uses and extends an `Array` constructor and prototype from a di
 **Important!**
 super-collection uses the [fast.js]() equivalents for the ES5 array "extras". This means that, for certain obscure edge cases, methods like `forEach`, `map`, `filter`, `reduce`, `every`, and `some` might not work as expected. You can access the native versions of these methods by prefixing the method name with `native` (i.e. `nativeForEach`).
 
+#### `.forEach()`
+#### `.map()`
+#### `.filter()`
+#### `.reduce()`
+#### `.reduceRight()`
+#### `.every()`
+#### `.some()`
+#### `.indexOf()`
+#### `.lastIndexOf()`
+
+#### `.nativeForEach()`
+#### `.nativeMap()`
+#### `.nativeFilter()`
+#### `.nativeReduce()`
+#### `.nativeReduceRight()`
+#### `.nativeEvery()`
+#### `.nativeSome()`
+#### `.nativeIndexOf()`
+#### `.nativeLastIndexOf()`
+
 #### `chainPush()`
 Works like `Array.prototype.push`, except it returns the collection so you can chain subsequent method calls.
 
