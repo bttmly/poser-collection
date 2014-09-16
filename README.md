@@ -2,13 +2,29 @@
 
 [![Build Status](https://travis-ci.org/nickb1080/super-collection.svg?branch=master)](https://travis-ci.org/nickb1080/super-collection)
 
-An extensible Array-like class which has a lot of the Underscore collection methods.
-Super collection uses and extends an `Array` constructor and prototype from a different execution context via [Poser](https://github.com/bevacqua/poser/). Here's a [short article](http://blog.ponyfoo.com/2014/06/07/how-to-avoid-objectprototype-pollution) describing how Poser works.
+_Fast, fluent, extensible arrays._
+
+
+super-collection (working on a better name...) uses and extends an `Array` constructor and prototype from a different execution context via [Poser](https://github.com/bevacqua/poser/). Here's a [short article](http://blog.ponyfoo.com/2014/06/07/how-to-avoid-objectprototype-pollution) describing how Poser works.
 
 ## Instance Methods
 
+- ALL `Array.prototype` methods are available, subject to the caveat directly below.
+
 **Important!**
-super-collection uses the [fast.js]() equivalents for the ES5 array "extras". This means that, for certain obscure edge cases, methods like `forEach`, `map`, `filter`, `reduce`, `every`, and `some` might not work as expected. You can access the native versions of these methods by prefixing the method name with `native` (i.e. `nativeForEach`).
+super-collection uses the [fast.js]() equivalents for the ES5 array "extras". This means that, for cases, methods like `forEach`, `map`, `filter`, `reduce`, `every`, and `some` might not work as expected. You can access the native versions of these methods by prefixing the method name with `native` (i.e. `nativeForEach`). The biggest difference is that these iteration methods _do_ iterate over "holes" (undefined items) in your collections. Here's a basic example:
+
+```js
+var collection = require("super-collection");
+
+var emptyCollection = collection(3); // [ , , ]
+var emptyArray = new Array(3); // [ , , ]
+
+emptyCollection.map(function (_, i) { return i }); // [0, 1, 2]
+emptyArray.map(function (_, i) { return i }); // [ , , ]
+```
+
+... But now, actually, the methods:
 
 #### `.forEach()`
 #### `.map()`
