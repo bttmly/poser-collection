@@ -218,10 +218,10 @@ Returns a collection where the original collection and `rows` have been merged i
 
 ## Factory Properties
 #### `.ctor`
-The `Collection` constructor. Works exactly like `Array` but doesn't `===` it.
+The `Collection` constructor. It's a reference to the `Array` global object from another execution context. As such, it works exactly like `Array` but doesn't `===` it.
 
 #### `.proto`
-`Collection.prototype`. This is where all the instance methods live. Augment at will.
+`Collection.prototype`. This is where all the instance methods live. Augment at will. This reference is provided for convenience, and can also be accessed through `.ctor.prototype`.
 
 ## Factory Static Methods
 #### `.isCollection(Object obj)`
