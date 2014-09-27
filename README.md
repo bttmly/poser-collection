@@ -213,7 +213,7 @@ Returns a two-item collection where the first value is the result of calling `mi
 #### `asRowsOf([ArrayLike headers])`
 Returns a collection where the original collection and `headers` have been merged into a objects, where a given index of `headers` is the key for that index in each item in the original.
 
-### `asHeadersOf([ArrayLike rows)`
+#### `asHeadersOf([ArrayLike rows)`
 Returns a collection where the original collection and `rows` have been merged into a objects, where a given index of the original is the key for that index in each item in `rows`.
 
 ## Factory Properties
