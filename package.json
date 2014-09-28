@@ -1,28 +1,28 @@
 {
   "name": "collection.js",
-  "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
   "dependencies": {
     "fast-poser": "0.0.1",
-    "mocha": "^1.21.4",
     "poser": "^1.1.3"
+  },
+  "devDependencies": {
+    "browserify": "^5.9.1",
+    "chai": "^1.9.1",
+    "mocha": "^1.21.4",
+    "sinon": "^1.10.3",
+    "uglify-js": "^2.4.15",
+    "uglifyjs": "^2.3.6",
+    "underscore": "^1.6.0",
+    "watchify": "^1.0.1"
   },
   "description": "An extensible Array-like class which has a lot of the Underscore collection methods.",
   "main": "index.js",
   "scripts": {
     "test": "mocha -R spec test/test.js",
-    "browser-build": "browserify -s collection ./ > ./dist/super-collection.js && yuicompressor ./dist/super-collection.js -o ./dist/super-collection.min.js",
-    "browser-watch": "watchify ./ -s collection -o ./dist/super-collection.js"
+    "build": "browserify ./ -s collection-o ./dist/super-collection.js; uglifyjs -cm -o ./dist/super-collection.min.js ./dist/super-collection.js ",
+    "watch": "watchify ./ -s collection -o ./dist/super-collection.js"
   },
   "author": "Nick Bottomley",
   "repository": "https://github.com/nickb1080/super-collection/",
-  "license": "MIT",
-  "devDependencies": {
-    "browserify": "^5.9.1",
-    "chai": "^1.9.1",
-    "sinon": "^1.10.3",
-    "uglifyjs": "^2.3.6",
-    "underscore": "^1.6.0",
-    "watchify": "^1.0.1"
-  }
+  "license": "MIT"
 }
