@@ -213,15 +213,15 @@ Returns a two-item collection where the first value is the result of calling `mi
 #### `asRowsOf([ArrayLike headers])`
 Returns a collection where the original collection and `headers` have been merged into a objects, where a given index of `headers` is the key for that index in each item in the original.
 
-### `asHeadersOf([ArrayLike rows)`
+#### `asHeadersOf([ArrayLike rows)`
 Returns a collection where the original collection and `rows` have been merged into a objects, where a given index of the original is the key for that index in each item in `rows`.
 
 ## Factory Properties
 #### `.ctor`
-The `Collection` constructor. Works exactly like `Array` but doesn't `===` it.
+The `Collection` constructor. It's a reference to the `Array` global object from another execution context. As such, it works exactly like `Array` but doesn't `===` it.
 
 #### `.proto`
-`Collection.prototype`. This is where all the instance methods live. Augment at will.
+`Collection.prototype`. This is where all the instance methods live. Augment at will. This reference is provided for convenience, and can also be accessed through `.ctor.prototype`.
 
 ## Factory Static Methods
 #### `.isCollection(Object obj)`
