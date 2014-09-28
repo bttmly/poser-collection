@@ -224,6 +224,9 @@ The `Collection` constructor. It's a reference to the `Array` global object from
 `Collection.prototype`. This is where all the instance methods live. Augment at will. This reference is provided for convenience, and can also be accessed through `.ctor.prototype`.
 
 ## Factory Static Methods
+#### `.extend(Object stuff)`
+Copies the properties and values of `stuff` into `Collection.prototype`.
+
 #### `.isCollection(Object obj)`
 Returns true if `obj` is `instanceof` the factory's copy of `Collection`. If you have multiple versions of `super-collection` running, instances won't satisfy another factory's `isCollection()`.
 
