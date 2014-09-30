@@ -130,10 +130,18 @@ Maps a collection into a new collection of items containing each passed in `prop
 Inverse of `filter()`. Returns a collection with all items for which `test(item)` returns a falsy value.
 
 #### `invoke(String methodName | Function func [, arguments... ])`
-If `invoke` is called with a function, `func` is called on each item in a collection. Otherwise, each item's method named `method` is called. Parameters beyond the first are used in the invocation. Returns the collection.
+If `invoke` is called with a function, `func` is called on each item in a collection. Otherwise, each item's method named `method` is called. Parameters beyond the first are used in the invocation. The `this` context is the item. Returns the collection.
 
 #### `mapInvoke(String methodName | Function func [, arguments... ])`
 Like `invoke`, but returns a collection with the values returned by each invocation.
+
+```
+var nums = collection([1, 2, 3]);
+var strs = nums.mapInvoke( "toString" ); 
+// ["1", "2", "3"]
+var doubles = nums.mapInvoke( function () { return this * 2 });
+// [2, 4, 6]
+```
 
 #### `without([Object item, etc.])`
 Returns a collection with all items that `===` an argument removed.
