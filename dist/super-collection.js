@@ -54,6 +54,13 @@ function factoryDeep ( arr ) {
   });
 }
 
+function extend ( target, source ) {
+  return Object.keys( source ).reduce( function ( tgt, key ) {
+    tgt[key] = source[key];
+    return tgt;
+  }, target );
+}
+
 function keys ( obj ) {
   return factory( Object.keys( obj ) );
 }
@@ -84,11 +91,6 @@ function not ( fn ) {
 
 function contains ( obj, value ) {
   return cp.indexOf.call( obj, value ) > -1;
-}
-
-
-function isTruthy ( value ) {
-  return !!value;
 }
 
 function identity ( value ) {
@@ -288,7 +290,11 @@ cp.contains = function ( obj ) {
 };
 
 cp.tap = function ( fn ) {
-  fn( this );
+  var args = new Collection( arguments.length );
+  for ( var i = 0; i < args.length; i++ ) {
+    args[i] = arguments[i];
+  }
+  fn( this, args.slice( 1 ) );
   return this;
 };
 
@@ -329,7 +335,7 @@ cp.tail = cp.rest;
 cp.drop = cp.rest;
 
 cp.compact = function () {
-  return this.filter( isTruthy );
+  return this.filter( identity );
 };
 
 cp.flatten = function () {
@@ -461,7 +467,9 @@ cp.asHeadersOf = function ( rows ) {
 };
 
 factory.ctor = Collection;
-factory.proto = Collection.prototype;
+factory.proto = cp;
+
+factory.extend = extend.bind( null, cp );
 
 factory.isCollection = isCollection;
 factory.isArrayish = isArrayLike;
@@ -524,6 +532,7 @@ module.exports = function (ArrayLike) {
         iterator(subject[i], i, subject);
       }
     },
+
     map: function fastMap (subject, fn, thisContext) {
       var length = subject.length,
           result = new ArrayLike(length),
@@ -534,6 +543,7 @@ module.exports = function (ArrayLike) {
       }
       return result;
     },
+
     filter: function fastFilter (subject, fn, thisContext) {
       var length = subject.length,
           result = new ArrayLike(),
@@ -546,6 +556,7 @@ module.exports = function (ArrayLike) {
       }
       return result;
     },
+
     reduce: function fastReduce (subject, fn, initialValue, thisContext) {
       var length = subject.length,
           iterator = thisContext !== undefined ? bindInternal4(fn, thisContext) : fn,
@@ -566,6 +577,7 @@ module.exports = function (ArrayLike) {
 
       return result;
     },
+
     reduceRight: function fastReduce (subject, fn, initialValue, thisContext) {
       var length = subject.length,
           iterator = thisContext !== undefined ? bindInternal4(fn, thisContext) : fn,
@@ -586,6 +598,7 @@ module.exports = function (ArrayLike) {
 
       return result;
     },
+
     indexOf: function fastIndexOf (subject, target, fromIndex) {
       var length = subject.length,
           i = 0;
@@ -607,6 +620,7 @@ module.exports = function (ArrayLike) {
       }
       return -1;
     },
+
     lastIndexOf: function fastLastIndexOf (subject, target, fromIndex) {
       var length = subject.length,
           i = length - 1;
@@ -624,6 +638,7 @@ module.exports = function (ArrayLike) {
       }
       return -1;
     },
+
     some: function fastSome (subject, fn, thisContext) {
       var length = subject.length,
           iterator = thisContext !== undefined ? bindInternal3(fn, thisContext) : fn,
@@ -635,6 +650,7 @@ module.exports = function (ArrayLike) {
       }
       return false;
     },
+
     every: function fastEvery (subject, fn, thisContext) {
       var length = subject.length,
           iterator = thisContext !== undefined ? bindInternal3(fn, thisContext) : fn,
@@ -646,6 +662,17 @@ module.exports = function (ArrayLike) {
       }
       return true;
     },
+
+    clone: function fastCloneArray (input) {
+      var length = input.length,
+          sliced = new ArrayLike(length),
+          i;
+      for (i = 0; i < length; i++) {
+        sliced[i] = input[i];
+      }
+      return sliced;
+    },
+
     partial: function fastPartial (fn) {
       var boundLength = arguments.length - 1,
           boundArgs;
@@ -845,8 +872,5 @@ function poser (type) {
 
 module.exports = poser;
 
-},{"vm":3}],7:[function(require,module,exports){
-module.exports = require( './lib/collection.js' );
-
-},{"./lib/collection.js":1}]},{},[7])(7)
+},{"vm":3}]},{},[1])(1)
 });
