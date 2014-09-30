@@ -152,8 +152,8 @@ An alias for `without()`.
 #### `contains(Object value)`
 Returns `true` if `value` is in the collection, otherwise `false`.
 
-#### `tap(Function func)`
-Calls a function `func` on the collection, and returns the collection.
+#### `tap(Function func, [ arguments... ])`
+Calls a function `func` on the collection with the provided `arguments`, and returns the collection.
 
 #### `first([Number num])`
 Returns the first `num` items in the collection; `num` defualts to 1.
