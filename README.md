@@ -135,11 +135,11 @@ If `invoke` is called with a function, `func` is called on each item in a collec
 #### `mapInvoke(String methodName | Function func [, arguments... ])`
 Like `invoke`, but returns a collection with the values returned by each invocation.
 
-```
+```js
 var nums = collection([1, 2, 3]);
 var strs = nums.mapInvoke( "toString" ); 
 // ["1", "2", "3"]
-var doubles = nums.mapInvoke( function () { return this * 2 });
+var doubles = nums.mapInvoke( function ( n ) { return this * n }, 2 );
 // [2, 4, 6]
 ```
 
