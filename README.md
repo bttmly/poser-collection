@@ -4,8 +4,11 @@
 
 _Fast, fluent, extensible arrays._
 
-
 poser-collection uses and extends an `Array` constructor and prototype from a different execution context via [Poser](https://github.com/bevacqua/poser/). Here's a [short article](http://blog.ponyfoo.com/2014/06/07/how-to-avoid-objectprototype-pollution) describing how Poser works.
+
+```
+npm install poser-collection
+```
 
 ## Instance Methods
 
