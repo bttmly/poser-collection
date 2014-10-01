@@ -1,6 +1,6 @@
 {
   "name": "poser-collection",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "dependencies": {
     "poser": "^1.1.5"
   },
