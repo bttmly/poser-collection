@@ -9,7 +9,7 @@ var range = helpers.range;
 var haveSameValues = helpers.haveSameValues;
 var userData = helpers.userData;
 
-var c = require( "../lib/collection.js" );
+var c = require( "../lib" );
 
 var isArray = Array.isArray;
 

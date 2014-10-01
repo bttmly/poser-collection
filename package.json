@@ -5,6 +5,7 @@
     "poser": "^1.1.5"
   },
   "devDependencies": {
+    "benchmark": "^1.0.0",
     "browserify": "^5.9.1",
     "chai": "^1.9.1",
     "function-bind": "^1.0.0",
@@ -17,12 +18,13 @@
     "watchify": "^1.0.1"
   },
   "description": "An extensible Array-like class with many of the Underscore collection methods.",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
     "lint": "jshint ./lib/*.js",
     "test": "npm run lint && mocha -R spec test/test.js",
-    "build": "browserify ./lib/collection.js -s collection -o ./dist/poser-collection.js; uglifyjs -cm -o ./dist/poser-collection.min.js ./dist/poser-collection.js ",
-    "watch": "watchify ./lib/collection.js -s collection -o ./dist/poser-collection.js"
+    "build": "browserify ./lib/index.js -s collection -o ./dist/poser-collection.js; uglifyjs -cm -o ./dist/poser-collection.min.js ./dist/poser-collection.js ",
+    "watch": "watchify ./lib/index.js -s collection -o ./dist/poser-collection.js",
+    "bench": "node ./bench/index.js"
   },
   "testling": {
     "harness": "mocha-bdd",

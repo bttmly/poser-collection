@@ -3,7 +3,7 @@
 var expect = require( "chai" ).expect;
 
 var sinon = require( "sinon" );
-var c = require( "../lib/collection.js" );
+var c = require( "../lib" );
 
 function times2 ( num ) {
   return num * 2;
