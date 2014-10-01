@@ -13,6 +13,8 @@ var c = require( "../lib/collection.js" );
 
 var isArray = Array.isArray;
 
+var toString = Function.call.bind( ({}).toString );
+
 function match( obj, against ){
   for ( var prop in against ) {
     if ( obj[prop] !== against[prop] ) {
@@ -69,6 +71,13 @@ describe("factory", function () {
     expect( col.toArray() ).to.deep.equal( new Array( "a" ) );
   });
 
+  it("uses an Array-like constructor from a different execution context", function () {
+    expect( c.ctor ).to.not.equal( Array );
+    expect( c.proto ).to.not.equal( Array.prototype );
+    expect( toString( new c.ctor() ) ).to.equal( "[object Array]" );
+    expect( JSON.stringify( new c.ctor() ) ).to.equal( "[]" );
+  });
+
 });
 
 describe( "#toArray", function() {
@@ -95,7 +104,6 @@ describe( "#toArrayDeep", function () {
     expect( isArray( arr2 ) ).to.equal( true );
     expect( isArray( arr2[1] ) ).to.equal( true );
     expect( isArray( arr2[1][1] ) ).to.equal( true );
-
 
     expect( arr2 ).to.deep.equal( arr );
   });
