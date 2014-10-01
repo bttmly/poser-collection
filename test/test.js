@@ -87,6 +87,16 @@ describe( "#toArrayDeep", function () {
     var arr = [1,[2,[3]]];
     var col = c.deep( arr );
     var arr2 = col.toArrayDeep();
+
+    expect( c.isCollection( col ) ).to.equal( true );
+    expect( c.isCollection( col[1] ) ).to.equal( true );
+    expect( c.isCollection( col[1][1] ) ).to.equal( true );
+
+    expect( isArray( arr2 ) ).to.equal( true );
+    expect( isArray( arr2[1] ) ).to.equal( true );
+    expect( isArray( arr2[1][1] ) ).to.equal( true );
+
+
     expect( arr2 ).to.deep.equal( arr );
   });
 });
