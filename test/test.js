@@ -9,7 +9,7 @@ var range = helpers.range;
 var haveSameValues = helpers.haveSameValues;
 var userData = helpers.userData;
 
-var c = require( ".." );
+var c = require( "../lib/collection.js" );
 
 function match( obj, against ){
   for ( var prop in against ) {
