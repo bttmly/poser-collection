@@ -21,14 +21,14 @@
   "scripts": {
     "lint": "jshint ./lib/*.js",
     "test": "npm run lint && mocha -R spec test/test.js",
-    "build": "browserify ./lib/collection.js -s collection -o ./dist/super-collection.js; uglifyjs -cm -o ./dist/super-collection.min.js ./dist/super-collection.js ",
-    "watch": "watchify ./lib/collection.js -s collection -o ./dist/super-collection.js"
+    "build": "browserify ./lib/collection.js -s collection -o ./dist/poser-collection.js; uglifyjs -cm -o ./dist/poser-collection.min.js ./dist/poser-collection.js ",
+    "watch": "watchify ./lib/collection.js -s collection -o ./dist/poser-collection.js"
   },
   "testling": {
     "harness": "mocha-bdd",
     "files": "./test/test.js"
   },
   "author": "Nick Bottomley",
-  "repository": "https://github.com/nickb1080/super-collection/",
+  "repository": "https://github.com/nickb1080/poser-collection/",
   "license": "MIT"
 }

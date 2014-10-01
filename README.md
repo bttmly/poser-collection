@@ -1,21 +1,21 @@
-# super-collection
+# poser-collection
 
-[![Build Status](https://travis-ci.org/nickb1080/super-collection.svg?branch=master)](https://travis-ci.org/nickb1080/super-collection)
+[![Build Status](https://travis-ci.org/nickb1080/poser-collection.svg?branch=master)](https://travis-ci.org/nickb1080/poser-collection)
 
 _Fast, fluent, extensible arrays._
 
 
-super-collection (working on a better name...) uses and extends an `Array` constructor and prototype from a different execution context via [Poser](https://github.com/bevacqua/poser/). Here's a [short article](http://blog.ponyfoo.com/2014/06/07/how-to-avoid-objectprototype-pollution) describing how Poser works.
+poser-collection uses and extends an `Array` constructor and prototype from a different execution context via [Poser](https://github.com/bevacqua/poser/). Here's a [short article](http://blog.ponyfoo.com/2014/06/07/how-to-avoid-objectprototype-pollution) describing how Poser works.
 
 ## Instance Methods
 
 - ALL `Array.prototype` methods are available, subject to the caveat directly below.
 
 **Important!**
-super-collection uses the [fast.js]() equivalents for the ES5 array "extras". This means that, for cases, methods like `forEach`, `map`, `filter`, `reduce`, `every`, and `some` might not work as expected. You can access the native versions of these methods by prefixing the method name with `native` (i.e. `nativeForEach`). The biggest difference is that these iteration methods _do_ iterate over "holes" (undefined items) in your collections. Here's a basic example:
+poser-collection uses the [fast.js]() equivalents for the ES5 array "extras". This means that, for cases, methods like `forEach`, `map`, `filter`, `reduce`, `every`, and `some` might not work as expected. You can access the native versions of these methods by prefixing the method name with `native` (i.e. `nativeForEach`). The biggest difference is that these iteration methods _do_ iterate over "holes" (undefined items) in your collections. Here's a basic example:
 
 ```js
-var collection = require("super-collection");
+var collection = require("poser-collection");
 
 var emptyCollection = collection(3); // [ , , ]
 var emptyArray = new Array(3); // [ , , ]
@@ -236,7 +236,7 @@ The `Collection` constructor. It's a reference to the `Array` global object from
 Copies the properties and values of `stuff` into `Collection.prototype`.
 
 #### `.isCollection(Object obj)`
-Returns true if `obj` is `instanceof` the factory's copy of `Collection`. If you have multiple versions of `super-collection` running, instances won't satisfy another factory's `isCollection()`.
+Returns true if `obj` is `instanceof` the factory's copy of `Collection`. If you have multiple versions of `poser-collection` running, instances won't satisfy another factory's `isCollection()`.
 
 #### `.isArrayish(Object obj)`
 Returns true if `obj` is "array-like", i.e. returns true for `Array` instances and `Collection` instances. Uses `Object.prototype.toString`.

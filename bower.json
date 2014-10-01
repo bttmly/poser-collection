@@ -13,8 +13,8 @@
       "github": "http://github.com/nickb1080"
     }
   ],
-  "homepage": "https://github.com/nickb1080/super-collection",
-  "main": "./dist/super-collection.js",
+  "homepage": "https://github.com/nickb1080/poser-collection",
+  "main": "./dist/poser-collection.js",
   "ignore": [
     "./lib",
     "./test"
