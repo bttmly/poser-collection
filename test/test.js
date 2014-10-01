@@ -11,6 +11,8 @@ var userData = helpers.userData;
 
 var c = require( "../lib/collection.js" );
 
+var isArray = Array.isArray;
+
 function match( obj, against ){
   for ( var prop in against ) {
     if ( obj[prop] !== against[prop] ) {
@@ -69,7 +71,6 @@ describe("factory", function () {
 
 });
 
-// Collection.prototype.toArray
 describe( "#toArray", function() {
 
   it( "returns a vanilla array representing the collection's data", function () {
@@ -85,7 +86,8 @@ describe( "#toArrayDeep", function () {
   it( "recursively calls .toArray() on each nested collection" , function () {
     var arr = [1,[2,[3]]];
     var col = c.deep( arr );
-    expect( col.toArrayDeep() ).to.deep.equal( arr );
+    var arr2 = col.toArrayDeep();
+    expect( arr2 ).to.deep.equal( arr );
   });
 });
 
