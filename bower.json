@@ -1,6 +1,6 @@
 {
-  "name": "super-collection",
-  "description": "",
+  "name": "poser-collection",
+  "description": "An extensible Array-like class with many of the Underscore collection methods.",
   "license": "MIT",
   "keywords": [
     "collection",
@@ -8,12 +8,18 @@
     "utility"
   ],
   "authors": [
-    { "name": "Nick Bottomley", "github": "http://github.com/nickb1080" }
+    {
+      "name": "Nick Bottomley",
+      "github": "http://github.com/nickb1080"
+    }
   ],
   "homepage": "https://github.com/nickb1080/super-collection",
   "main": "./dist/super-collection.js",
   "ignore": [
     "./lib",
     "./test"
-  ]
+  ],
+  "devDependencies": {
+    "mocha": "~1.21.4",
+  }
 }

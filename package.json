@@ -1,5 +1,5 @@
 {
-  "name": "collection.js",
+  "name": "poser-collection",
   "version": "1.0.0",
   "dependencies": {
     "poser": "^1.1.5"
@@ -7,20 +7,26 @@
   "devDependencies": {
     "browserify": "^5.9.1",
     "chai": "^1.9.1",
+    "function-bind": "^1.0.0",
     "jshint": "^2.5.6",
     "mocha": "^1.21.4",
     "sinon": "^1.10.3",
+    "testling": "^1.7.1",
     "uglifyjs": "^2.3.6",
     "underscore": "^1.6.0",
     "watchify": "^1.0.1"
   },
-  "description": "An extensible Array-like class which has a lot of the Underscore collection methods.",
+  "description": "An extensible Array-like class with many of the Underscore collection methods.",
   "main": "index.js",
   "scripts": {
     "lint": "jshint ./lib/*.js",
     "test": "npm run lint && mocha -R spec test/test.js",
     "build": "browserify ./lib/collection.js -s collection -o ./dist/super-collection.js; uglifyjs -cm -o ./dist/super-collection.min.js ./dist/super-collection.js ",
     "watch": "watchify ./lib/collection.js -s collection -o ./dist/super-collection.js"
+  },
+  "testling": {
+    "harness": "mocha-bdd",
+    "files": "./test/test.js"
   },
   "author": "Nick Bottomley",
   "repository": "https://github.com/nickb1080/super-collection/",
