@@ -20,6 +20,6 @@
     "./test"
   ],
   "devDependencies": {
-    "mocha": "~1.21.4",
+    "mocha": "~1.21.4"
   }
 }
