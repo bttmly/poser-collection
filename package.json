@@ -17,7 +17,7 @@
     "watchify": "^1.0.1"
   },
   "description": "An extensible Array-like class with many of the Underscore collection methods.",
-  "main": "index.js",
+  "main": "lib/collection.js",
   "scripts": {
     "lint": "jshint ./lib/*.js",
     "test": "npm run lint && mocha -R spec test/test.js",
