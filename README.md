@@ -108,23 +108,105 @@ An alias for `map()`.
 #### `where(Object match)`
 Returns a subset of the collection where each item has the same value for each property of `match`.
 
+```js
+var people = collection([
+  {name: "Nate", age: 30},
+  {name: "Jane", age: 33}
+  {name: "Nora", age: 30}
+]);
+
+people.where({age: 30}) 
+// [{name: "Nate", age: 30}
+//  {name: "Nora", age: 30 }]
+```
+
 #### `whereNot(Object match)`
 Returns a subset of the collection where each item doesn't have the same value for each property of `match`.
+
+```js
+var people = collection([
+  {name: "Nate", age: 30},
+  {name: "Jane", age: 33}
+  {name: "Nora", age: 30}
+]);
+
+people.whereNot({age: 30}) 
+// [{name: "Jane", age: 33}]
+```
 
 #### `find(Function test)`
 Returns the first item in the collection for which `test(item)` returns a truthy value.
 
+```js
+var people = collection([
+  {name: "Nate", age: 30},
+  {name: "Jane", age: 33}
+  {name: "Nora", age: 30}
+]);
+
+people.find(function (person) {
+  return person.name.charAt(0) === "N";
+}); 
+// {name: "Nate", age: 30}
+```
+
 #### `findNot(Function test)`
 Returns the first item in the collection for which `test(item)` returns a falsy value.
+
+```js
+var people = collection([
+  {name: "Nate", age: 30},
+  {name: "Jane", age: 33}
+  {name: "Nora", age: 30}
+]);
+
+people.findNot(function (person) {
+  return person.name.charAt(0) === "N";
+}); 
+// {name: "Jane", age: 33}
+```
 
 #### `findWhere(Object match)`
 Like `where()` but returns only the first item.
 
+```js
+var people = collection([
+  {name: "Nate", age: 30},
+  {name: "Jane", age: 33}
+  {name: "Nora", age: 30}
+]);
+
+people.findWhere({age: 30}); 
+// {name: "Nate", age: 30}
+```
+
 #### `findWhereNot(Object match)`
 Like `whereNot` but returns only the first item.
 
+```js
+var people = collection([
+  {name: "Nate", age: 30},
+  {name: "Jane", age: 33}
+  {name: "Nora", age: 30}
+]);
+
+people.findNot({age: 30}); 
+// {name: "Jane", age: 33}
+```
+
 #### `pluck(String property)`
-Maps a collection into a new collection of items containing only `property`.
+Maps a collection into a new collection of items equal to the `property` value of each object in the original collection.
+
+```js
+var people = collection([
+  {name: "Nate", age: 30},
+  {name: "Jane", age: 33}
+  {name: "Nora", age: 30}
+]);
+
+people.pluck("name"); 
+// ["Nate", "Jane", "Nora"]
+```
 
 #### `pick(String property [,String property, etc])`
 Maps a collection into a new collection of items containing each passed in `property`.
@@ -148,6 +230,13 @@ var doubles = nums.mapInvoke( function ( n ) { return this * n }, 2 );
 
 #### `without([Object item, etc.])`
 Returns a collection with all items that `===` an argument removed.
+
+```js
+var things = collection(["a", 1, "b", 2]);
+things.without(1, 2);
+// ["a", "b"]
+
+```
 
 #### `remove()`
 An alias for `without()`.
