@@ -217,6 +217,29 @@ Inverse of `filter()`. Returns a collection with all items for which `test(item)
 #### `invoke(String methodName | Function func [, arguments... ])`
 If `invoke` is called with a function, `func` is called on each item in a collection. Otherwise, each item's method named `method` is called. Parameters beyond the first are used in the invocation. The `this` context is the item. Returns the collection.
 
+```js
+var Person = function(age) {
+  this.age = age || 0;
+}
+
+Person.prototype.growOlder = function() {
+  this.age += 1;
+}
+
+var people = collection([new Person(10), new Person(20)]);
+people.invoke( "growOlder" );
+people[0].age // 11
+people[1].age // 21
+
+people.invoke( function () {
+  this.doubleAge = this.age * 2;
+});
+
+people[0].doubleAge // 22;
+people[1].doubleAge // 42
+```
+
+
 #### `mapInvoke(String methodName | Function func [, arguments... ])`
 Like `invoke`, but returns a collection with the values returned by each invocation.
 
@@ -243,6 +266,14 @@ An alias for `without()`.
 
 #### `contains(Object value)`
 Returns `true` if `value` is in the collection, otherwise `false`.
+
+```js
+  var o = {};
+  var c1 = collection([ o, 1, 2 ]);
+  var c2 = collection([ {}, 1, 2 ]);
+  c1.contains( o ) // true
+  c2.contains( o ) // false
+```
 
 #### `tap(Function func, [ arguments... ])`
 Calls a function `func` on the collection with the provided `arguments`, and returns the collection.
