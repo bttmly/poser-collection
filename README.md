@@ -58,46 +58,70 @@ The [fast.js](https://github.com/codemix/fast.js) implementation of `lastIndexOf
 
 
 #### `.nativeForEach()`
-The native `Array` implementation of `forEach`.
+The native `Array` implementation of [`forEach`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach).
 
 #### `.nativeMap()`
-The native `Array` implementation of `map`.
+The native `Array` implementation of [`map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map).
 
 #### `.nativeFilter()`
-The native `Array` implementation of `.filter`.
+The native `Array` implementation of [`.filter`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter).
 
 #### `.nativeReduce()`
-The native `Array` implementation of `reduce`.
+The native `Array` implementation of [`reduce`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce).
 
 #### `.nativeReduceRight()`
-The native `Array` implementation of `reduceRight`.
+The native `Array` implementation of [`reduceRight`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduceRight).
 
 #### `.nativeEvery()`
-The native `Array` implementation of `every`.
+The native `Array` implementation of [`every`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/every).
 
 #### `.nativeSome()`
-The native `Array` implementation of `some`.
+The native `Array` implementation of [`some`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/some).
 
 #### `.nativeIndexOf()`
-The native `Array` implementation of `indexOf`.
+The native `Array` implementation of [`indexOf`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/lastIndexOf).
 
 #### `.nativeLastIndexOf()`
-The native `Array` implementation of `lastIndexOf`.
+The native `Array` implementation of [`lastIndexOf`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/lastIndexOf).
 
 #### `chainPush()`
-Works like `Array.prototype.push`, except it returns the collection so you can chain subsequent method calls.
+Works like `Array.prototype.push`, except it returns the collection so you can chain subsequent method calls. **This method makes an in-place change to the object.**
+
+```js
+var c = collection();
+c.chainPush("a").chainPush("b");
+c // ["a", "b"]
+```
 
 #### `chainPop()`
-Works like `Array.prototype.pop`, except it returns the collection so you can chain subsequent method calls.
+Works like `Array.prototype.pop`, except it returns the collection so you can chain subsequent method calls. **This method makes an in-place change to the object.**
+
+```js
+var c = collection([1, 2, 3]);
+c.chainPop().chainPop();
+c // [1]
+```
 
 #### `chainShift()`
-Works like `Array.prototype.shift`, except it returns the collection so you can chain subsequent method calls.
+Works like `Array.prototype.shift`, except it returns the collection so you can chain subsequent method calls. **This method makes an in-place change to the object.**
+
+```js
+var c = collection([1, 2, 3]);
+c.chainShift().chainShift();
+c // [3]
+```
 
 #### `chainUnshift()`
-Works like `Array.prototype.unshift`, except it returns the collection so you can chain subsequent method calls.
+Works like `Array.prototype.unshift`, except it returns the collection so you can chain subsequent method calls. **This method makes an in-place change to the object.**
+
+```js
+var c = collection();
+c.chainUnshift("a").chainUnshift("b");
+c // ["b", "a"]
+```
 
 #### `each()`
-An alias for `forEach()`
+An alias for `forEach()`.
 
 #### `select()`
 An alias for `filter()`.
@@ -342,8 +366,8 @@ An alias for `rest`.
 Returns a collection with all falsy values removed.
 
 ```js
-things.var things = collection(0, 1, true, false, "a", "", [], null, {}, undefined)
-compact() // [1, true, "a", [], {}]
+var things = collection(0, 1, true, false, "a", "", [], null, {}, undefined)
+things.compact() // [1, true, "a", [], {}]
 ```
 
 #### `flatten()`
