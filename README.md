@@ -278,8 +278,25 @@ Returns `true` if `value` is in the collection, otherwise `false`.
 #### `tap(Function func, [ arguments... ])`
 Calls a function `func` on the collection with the provided `arguments`, and returns the collection.
 
+```
+var people = collection([{name: "Patrick"}, {name: "Max"}, {name: "Ali"}]);
+people
+  .sortBy( "name" )
+  .tap( function ( title ) {
+    this[0].title = title;
+  }, "Mr." )
+  .pluck( "title" );
+  // ["Mr.", undefined, undefined]
+```
+
 #### `first([Number num])`
 Returns the first `num` items in the collection; `num` defualts to 1.
+
+```
+var letters = collection(["a", "b", "c", "d", "e"])
+letters.first() // ["a"]
+letters.first(2) // ["a", "b"]
+```
 
 #### `head()`
 An alias for `first()`.
