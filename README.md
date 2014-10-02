@@ -278,7 +278,7 @@ Returns `true` if `value` is in the collection, otherwise `false`.
 #### `tap(Function func, [ arguments... ])`
 Calls a function `func` on the collection with the provided `arguments`, and returns the collection.
 
-```
+```js
 var people = collection([{name: "Patrick"}, {name: "Max"}, {name: "Ali"}]);
 people
   .sortBy( "name" )
@@ -292,7 +292,7 @@ people
 #### `first([Number num])`
 Returns the first `num` items in the collection; `num` defualts to 1.
 
-```
+```js
 var letters = collection(["a", "b", "c", "d", "e"])
 letters.first() // ["a"]
 letters.first(2) // ["a", "b"]
@@ -305,13 +305,32 @@ An alias for `first()`.
 An alias for `first()`.
 
 #### `initial([Number num])`
-Returns the items with indexes from 0 to length - `num`; `num` defaults to 1.
+Returns all but the last `num` items. `num` defaults to 1.
+
+```js
+var letters = collection(["a", "b", "c", "d", "e"])
+letters.initial() // ["a", "b", "c", "d"]
+letters.initial(2) // ["a", "b", "c"]
+```
 
 #### `last([Number num])`
 Returns the last `num` items in the collection; `num` defaults to 1.
 
+```js
+var letters = collection(["a", "b", "c", "d", "e"])
+letters.last() // ["e"]
+letters.last(2) // ["d", "e"]
+```
+
+
 #### `rest([Number num])`
 Returns the items with indexes `num` or greater; `num` defaults to 1.
+
+```js
+var letters = collection(["a", "b", "c", "d", "e"])
+letters.rest() // ["b", "c", "d", "e"]
+letters.rest(2) // ["c", "d", "e"]
+```
 
 #### `tail()`
 An alias for `rest`.
@@ -322,23 +341,64 @@ An alias for `rest`.
 #### `compact()`
 Returns a collection with all falsy values removed.
 
+```js
+things.var things = collection(0, 1, true, false, "a", "", [], null, {}, undefined)
+compact() // [1, true, "a", [], {}]
+```
+
 #### `flatten()`
 Returns a recursively flattened collection.
+
+```js
+var nested = collection([1,[2,[3,[4]]]]);
+nested.flatten() // [1, 2, 3, 4]
+```
 
 #### `partition(Function test)`
 Returns a two item collection. The first item is a collection with all values from the original collection for which `test(item)` returns a truthy value. The second item is a collection with the remaining values.
 
+```js
+var identity = function ( x ) { return x; };
+var things = collection(0, 1, true, false, "a", "", [], null, {}, undefined)
+things.partition( identity )
+// [[1, true, "a", [], {}], [0, false, "", null, undefined]]
+```
+
 #### `union([ArrayLike list, etc.])`
 Returns a collection of all the unique items that are in the original collection and each `list`.
+
+```js
+var letters = collection('a', 'b', 'c');
+letters.union(['x', 'y', 'z'], ['a', 'c', 'd']);
+// ["a", "b", "c", "x", "y", "z", "d"]
+```
 
 #### `intersection([ArrayLike list, etc.])`
 Returns the items in the original collection which are also present in each `list`.
 
+```js
+var letters = collection('a', 'b', 'c');
+letters.intersection(['a', 'b', 'z'], ['a', 'c', 'z'])
+// ["a"]
+
+```
+
 #### `difference([ArrayLike list, etc.])`
 Returns the items which are in the original collection and are present in none of the `list` arguments.
 
+```js
+var letters = collection('a', 'b', 'c');
+letters.difference(['a', 'b', 'z'], ['a', 'y', 'z'])
+// ["c"]
+```
+
 #### `unique()`
-Returns a collection with all the repeat items in the original collection removed.
+Returns a collection with all the repeat items in the original collection removed. Uses strict equality for comparison.
+
+```js
+collection([1, 2, "a", 1]).unique() // [1, 2, "a"]
+collection([{}, {}, {}]).unique() // [{}, {}, {}]
+```
 
 #### `uniq()`
 An alias for `unique()`.
@@ -352,11 +412,44 @@ Returns a collection in which items in the result with index `n` contain all the
 #### `min([String property])`
 Returns the minimum value in the list, or the minimum value among all items' `property` property.
 
+```js
+collection([1, 9, 20, 4, 16]).min() // 1
+
+collection([
+  {age: 10},
+  {age: 13},
+  {age: 19},
+  {age: 7}
+]).min( "age" ); // 7
+```
+
 #### `max([String property])`
 Returns the maximum value in the list, or the maximum value among all items' `property` property.
 
+```js
+collection([1, 9, 20, 4, 16]).max() // 20
+
+collection([
+  {age: 10},
+  {age: 13},
+  {age: 19},
+  {age: 7}
+]).max( "age" ); // 19
+```
+
 #### `extent([String property])`
 Returns a two-item collection where the first value is the result of calling `min()` and the second item is the result of calling `max()`.
+
+```js
+collection([1, 9, 20, 4, 16]).extent() // [1, 20]
+
+collection([
+  {age: 10},
+  {age: 13},
+  {age: 19},
+  {age: 7}
+]).extent( "age" ); // [7, 19]
+```
 
 #### `asRowsOf([ArrayLike headers])`
 Returns a collection where the original collection and `headers` have been merged into a objects, where a given index of `headers` is the key for that index in each item in the original.
