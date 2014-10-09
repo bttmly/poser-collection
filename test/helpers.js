@@ -1,12 +1,12 @@
 "use strict";
 
 var range = function( start, end ){
-  if ( start === undefined ) {
+  if ( end == null ) {
     end = start;
     start = 0;
   }
   var results = [];
-  while ( start < end ){
+  while ( start <= end ){
     results.push( start );
     start++;
   }
