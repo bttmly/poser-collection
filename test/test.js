@@ -15,6 +15,10 @@ var isArray = Array.isArray;
 
 var toString = Function.call.bind( ({}).toString );
 
+function idx ( _, i ) {
+  return i;
+}
+
 function match( obj, against ){
   for ( var prop in against ) {
     if ( obj[prop] !== against[prop] ) {
@@ -564,6 +568,35 @@ describe( "#union", function() {
     expect( cResult ).to.deep.equal( uResult );
   });
 });
+
+describe( "#longest", function () {
+  it( "returns the longest item in the collection", function () {
+    var col1 = c([
+      {},
+      new Date(),
+      [1, 2, 3, 4, 5],
+      "abcdefghij",
+      [1, 2, 3]
+    ]);
+    var col2 = c([
+      c(20).map( idx ),
+      c(100).map( idx ),
+      c(70).map( idx ),
+      c(20).map( idx )
+    ]);
+    var col3 = c([
+      c(20).map( idx ),
+      c(100).map( idx ),
+      c(70).map( idx ),
+      { length: 1000 },
+      c(20).map( idx )
+    ]);
+
+    expect( col1.longest() ).to.equal( "abcdefghij" );
+    expect( col2.longest() ).to.deep.equal( c(100).map( idx ) );
+    expect( col3.longest() ).to.deep.equal({ length: 1000 });
+  });
+})
 
 describe( "#min", function () {
   it( "works when not called with an argument", function () {
