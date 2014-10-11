@@ -21,7 +21,7 @@
   "main": "lib/index.js",
   "scripts": {
     "lint": "jshint ./lib/*.js",
-    "test": "npm run lint && mocha -R spec test/test.js",
+    "test": "npm run lint; mocha -R spec test/test.js",
     "build": "browserify ./lib/index.js -s collection -o ./dist/poser-collection.js; uglifyjs -cm -o ./dist/poser-collection.min.js ./dist/poser-collection.js ",
     "watch": "watchify ./lib/index.js -s collection -o ./dist/poser-collection.js",
     "bench": "node ./bench/index.js"

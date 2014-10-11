@@ -3,12 +3,15 @@ var Benchmark = require('benchmark');
 
 
 run([
-  bench('Array::map() vs Collection::map() - 3 items, preallocated', require('./map-3-preallocate')),
-  bench('Array::map() vs Collection::map() - 10 items, preallocated', require('./map-10-preallocate')),
-  bench('Array::map() vs Collection::map() - 1000 items, preallocated', require('./map-1000-preallocate')),
-  bench('Array::map() vs Collection::map() - 3 items', require('./map-3')),
-  bench('Array::map() vs Collection::map() - 10 items', require('./map-10')),
-  bench('Array::map() vs Collection::map() - 1000 items', require('./map-1000'))
+  // bench('Array::map() vs Collection::map() - 3 items, preallocated', require('./map-3-preallocate')),
+  // bench('Array::map() vs Collection::map() - 10 items, preallocated', require('./map-10-preallocate')),
+  // bench('Array::map() vs Collection::map() - 1000 items, preallocated', require('./map-1000-preallocate')),
+  // bench('Array::map() vs Collection::map() - 3 items', require('./map-3')),
+  // bench('Array::map() vs Collection::map() - 10 items', require('./map-10')),
+  // bench('Array::map() vs Collection::map() - 1000 items', require('./map-1000'))
+  bench('Array::push() vs. Collection::push() - 3 items', require('./push-3')),
+  bench('Array::push() vs. Collection::push() - 10 items', require('./push-10')),
+  bench('Array::push() vs. Collection::push() - 1000 items', require('./push-1000'))
 
 
 ]);

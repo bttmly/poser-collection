@@ -504,3 +504,7 @@ Passes `arg` to factory; useful when you only want to use the factory's one-argu
 
 #### `.deep([Object arg])`
 Passes `arg` through factory recursively.
+
+
+## Benchmarks
+Because `poser-collection` uses [fast.js] for base iteration methods, it is much faster than `Array` for many operations. Interestingly, it is much _slower_ than `Array` for `push()` and perhaps other modify-in-place methods.
