@@ -10,8 +10,8 @@ exports['Array::map()'] = function () {
   return input.map(fns());
 };
 
-exports['Collection.map()'] = function () {
+exports['Collection::map()'] = function () {
   var input = Collection(1,2,3,4,5,6,7,8,9,10);
-  return input.map(fns());
+  return input.nativeMap(fns());
 };
 
