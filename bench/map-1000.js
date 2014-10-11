@@ -13,11 +13,11 @@ exports['Array::map()'] = function () {
   return input.map(fns());
 };
 
-exports['Collection.map()'] = function () {
+exports['Collection::map()'] = function () {
   var input = Collection();
   for (var i = 0; i < 1000; i++) {
     input.push(i);
   }
-  return input.map(fns());
+  return input.nativeMap(fns());
 };
 

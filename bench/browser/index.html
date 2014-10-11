@@ -1,0 +1,28 @@
+<html>
+<head>
+  <title></title>
+</head>
+<body>
+
+
+  <script>
+    (function (console) {
+      var log = console.log;
+      var logged = [];
+
+      console.log = function () {
+        logged.push(arguments);
+        log.apply(this, arguments);
+      };
+
+    })(console);
+
+
+
+  </script>
+
+  <script src="./index.js">
+  </script>
+
+</body>
+</html>

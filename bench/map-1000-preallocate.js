@@ -15,7 +15,7 @@ exports['Array::map()'] = function () {
   return input1.map(fns());
 };
 
-exports['Collection.map()'] = function () {
-  return input2.map(fns());
+exports['Collection::map()'] = function () {
+  return input2.nativeMap(fns());
 };
 
