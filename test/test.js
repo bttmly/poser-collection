@@ -382,6 +382,22 @@ describe( "#find", function() {
 
 });
 
+describe( "#findIndex", function() {
+
+  it( "returns first index matching test function", function() {
+    var col = c( range(1, 10) );
+    var i = col.findIndex(function (e) { return e % 5 === 0; });
+    expect( i ).to.equal( 4 );
+  });
+
+  it( "returns `-1` if no match is found", function () {
+    var col = c( range(1, 10) );
+    var i = col.findIndex(function (e) { return e % 11 === 0 });
+    expect( i ).to.equal( -1 );
+  })
+
+});
+
 describe( "#findWhere", function() {
 
   it( "works like _.findWhere", function() {
