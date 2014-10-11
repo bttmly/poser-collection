@@ -18,6 +18,10 @@ npm install poser-collection
 - [shift]()
 - [unshift]()
 - [concat]()
+- [sort]()
+- [join]()
+- [reverse]()
+- [splice]()
 
 ### Fast.js Iteration Methods
 - [forEach]()
