@@ -2,6 +2,7 @@
   "name": "poser-collection",
   "version": "1.0.3",
   "dependencies": {
+    "posable-array-uniq": "^1.0.0",
     "poser": "^1.1.5"
   },
   "devDependencies": {
