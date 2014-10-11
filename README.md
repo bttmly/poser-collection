@@ -10,6 +10,85 @@ poser-collection uses and extends an `Array` constructor and prototype from a di
 npm install poser-collection
 ```
 
+## Methods
+
+### Native Array Methods
+- [push]()
+- [pop]()
+- [shift]()
+- [unshift]()
+- [concat]()
+- [sort]()
+- [join]()
+- [reverse]()
+- [splice]()
+
+### Fast.js Iteration Methods
+- [forEach]()
+- [map]()
+- [filter]()
+- [reduce]()
+- [reduceRight]()
+- [some]()
+- [every]()
+- [indexOf]()
+- [lastIndexOf]()
+
+### Native Array Iteration Methods
+- [nativeForEach]()
+- [nativeMap]()
+- [nativeFilter]()
+- [nativeReduce]()
+- [nativeReduceRight]()
+- [nativeSome]()
+- [nativeEvery]()
+- [nativeIndexOf]()
+- [nativeLastIndexOf]()
+  
+
+### Extras & Underscore Methods
+- [chainPush]()
+- [chainPop]()
+- [chainShift]()
+- [chainUnshift]()
+- [contains]()
+- [where]()
+- [whereNot]()
+- [find]()
+- [findNot]()
+- [findWhere]()
+- [findWhereNot]()
+- [pluck]()
+- [pick]()
+- [reject]()
+- [invoke]()
+- [mapInvoke]()
+- [without]()
+- [tap]()
+- [clone]()
+- [compact]()
+- [flatten]()
+- [sortBy]()
+
+- [partition]()
+- [union]()
+- [intersection]()
+- [difference]()
+- [zip]()
+- [unique]()
+
+- [first]()
+- [initial]()
+- [last]()
+- [rest]()
+
+- [min]()
+- [max]()
+- [extent]()
+
+- [asHeadersOf]()
+- [asRowsOf]()
+
 ## Instance Methods
 
 - ALL `Array.prototype` methods are available, subject to the caveat directly below.
