@@ -591,12 +591,45 @@ describe( "#longest", function () {
       { length: 1000 },
       c(20).map( idx )
     ]);
+    var col4 = c([10, 100, 1000, {}])
 
     expect( col1.longest() ).to.equal( "abcdefghij" );
     expect( col2.longest() ).to.deep.equal( c(100).map( idx ) );
     expect( col3.longest() ).to.deep.equal({ length: 1000 });
+    expect( col4.longest() ).to.equal( null );
   });
-})
+});
+
+describe( "#shortest", function () {
+  it( "returns the longest item in the collection", function () {
+    var col1 = c([
+      {},
+      new Date(),
+      [1, 2, 3, 4, 5],
+      "abcdefghij",
+      [1, 2, 3]
+    ]);
+    var col2 = c([
+      c(20).map( idx ),
+      c(100).map( idx ),
+      c(70).map( idx ),
+      c(20).map( idx )
+    ]);
+    var col3 = c([
+      c(20).map( idx ),
+      c(100).map( idx ),
+      c(70).map( idx ),
+      { length: 10 },
+      c(20).map( idx )
+    ]);
+    var col4 = c([10, 100, 1000, {}])
+
+    expect( col1.shortest() ).to.deep.equal( [1, 2, 3] );
+    expect( col2.shortest() ).to.deep.equal( c(20).map( idx ) );
+    expect( col3.shortest() ).to.deep.equal({ length: 10 });
+    expect( col4.shortest() ).to.equal( null );
+  });
+});
 
 describe( "#min", function () {
   it( "works when not called with an argument", function () {
